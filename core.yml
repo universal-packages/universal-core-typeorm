@@ -1,0 +1,14 @@
+appsDirectory: './example'
+configDirectory: './example/config'
+modulesDirectory: './example/modules'
+tasksDirectory: './example/tasks'
+appWatcher:
+  enabled: true
+  ignore:
+    - .github
+logger:
+  level: TRACE
+  silence: false
+  terminal:
+    clear: true
+    withHeader: true

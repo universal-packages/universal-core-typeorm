@@ -1,0 +1,18 @@
+default:
+  dataSource:
+    type: postgres
+    port: 5432
+    entities:
+      - ./example/entity/*.ts
+    migrations:
+      - ./example//migration/*.ts
+  entitiesDir: ./example/entity
+  migrationsDir: ./example/migration
+  subscribersDir: ./example/subscriber
+
+development:
+  dataSource:
+    host: localhost
+    database: typeorm-test
+    synchronize: true
+    logging: true
