@@ -25,10 +25,9 @@ Do
 ucore exec typeorm-task <command> <options>
 ```
 
-All comand will behave the same, except that the data source always will be set from the TypeormModule that gest the configuration through universal-core config system.
+All comand will behave the same, except that the data source always will be set from the TypeormModule that gets the configuration through universal-core config system.
 
 Also the `init` will only pupulate your current project with the typeorm template.
-After 
 
 ## Accessing DataSource
 The TypeormModule will be normally available as a global variable, you can access the data source from there.
