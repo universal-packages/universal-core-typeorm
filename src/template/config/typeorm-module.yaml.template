@@ -25,6 +25,5 @@ production:
       - ./entity/*.js
     migrations:
       - ./migration/*.js
-  dataSource:
     synchronize: false
     logging: true
