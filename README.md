@@ -13,14 +13,17 @@ npm install @universal-packages/core-typeorm
 ```
 
 ## Typeorm cli
+
 To execute any of the [Typeorm cli commands](https://orkhan.gitbook.io/typeorm/docs/using-cli#log-sync-database-schema-queries-without-actual-running-them) you can do it through the `typeorm-task`.
 
 Instead of
+
 ```shell
 npm run typeorm <command> <options>
 ```
 
 Do
+
 ```shell
 ucore exec typeorm-task <command> <options>
 ```
@@ -30,6 +33,7 @@ All comand will behave the same, except that the data source always will be set 
 Also the `init` will only pupulate your current project with the typeorm template.
 
 ## Accessing DataSource
+
 The TypeormModule will be normally available as a global variable, you can access the data source from there.
 
 ```js
@@ -50,6 +54,3 @@ The development of this library in the open on GitHub, and we are grateful to th
 ### License
 
 [MIT licensed](./LICENSE).
-
-
-
