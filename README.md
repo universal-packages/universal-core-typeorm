@@ -10,6 +10,8 @@
 
 ```shell
 npm install @universal-packages/core-typeorm
+npm install typeorm
+npm install reflect-metadata
 ```
 
 ## Typeorm cli
