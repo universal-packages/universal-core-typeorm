@@ -1,1 +1,1 @@
-declare var typeormModule: import('./Typeorm.universal-core-module').default
+declare var typeormModule: import('./a.Typeorm.universal-core-module').default

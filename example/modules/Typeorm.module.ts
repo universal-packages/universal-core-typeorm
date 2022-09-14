@@ -1,1 +1,1 @@
-export { default } from '../../src/Typeorm.universal-core-module'
+export { default } from '../../src/a.Typeorm.universal-core-module'
