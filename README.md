@@ -10,8 +10,18 @@
 
 ```shell
 npm install @universal-packages/core-typeorm
-npm install typeorm
-npm install reflect-metadata
+```
+
+## Access datasource
+
+Core will expose the module `typeormModule` as a global if configured or in the core global object as in `coreModules`.
+
+```js
+typeormModule.dataSource.set()
+```
+
+```js
+core.coreModules.typeormModule.dataSource.set()
 ```
 
 ## Typeorm cli

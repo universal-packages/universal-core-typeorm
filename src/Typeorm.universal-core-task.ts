@@ -24,7 +24,7 @@ export default class TypeormTask extends CoreTask {
   public async prepare(): Promise<void> {
     if (typeormModule.dataSource && typeormModule.dataSource.isInitialized) await typeormModule.dataSource.destroy()
     CommandUtils.loadDataSource = async (): Promise<DataSource> => typeormModule.dataSource
-    // console.log = (...entries: string[]): void => this.logger.publish('INFO', null, entries.join(' '), 'TYPEORM')
+    console.log = (...entries: string[]): void => this.logger.publish('INFO', null, entries.join(' '), 'TYPEORM')
   }
 
   public async exec(): Promise<void> {
