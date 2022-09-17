@@ -12,6 +12,12 @@
 npm install @universal-packages/core-typeorm
 ```
 
+## Initialization
+
+```shell
+ucore exec typeorm-task init
+```
+
 ## Access datasource
 
 Core will expose the module `typeormModule` as a global if configured or in the core global object as in `coreModules`.
@@ -21,12 +27,12 @@ typeormModule.dataSource.set()
 ```
 
 ```js
-core.coreModules.typeormModule.dataSource.set()
+core.coreModules['typeorm-module'].dataSource.set()
 ```
 
 ## Typeorm cli
 
-To execute any of the [Typeorm cli commands](https://orkhan.gitbook.io/typeorm/docs/using-cli#log-sync-database-schema-queries-without-actual-running-them) you can do it through the `typeorm-task`.
+To execute any of the [Typeorm cli commands](https://orkhan.gitbook.io/typeorm/docs/using-cli) you can do it through the `typeorm-task`.
 
 Instead of
 
@@ -43,14 +49,6 @@ ucore exec typeorm-task <command> <options>
 All comand will behave the same, except that the data source always will be set from the TypeormModule that gets the configuration through universal-core config system.
 
 Also the `init` will only pupulate your current project with the typeorm template.
-
-## Accessing DataSource
-
-The TypeormModule will be normally available as a global variable, you can access the data source from there.
-
-```js
-typeormModule.dataSource
-```
 
 ## Typescript
 
