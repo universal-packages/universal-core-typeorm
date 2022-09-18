@@ -34,40 +34,40 @@ export default class TypeormTask extends CoreTask {
         this.logger.publish('INFO', 'Typeorm template initialized')
         break
       case 'cache:clear':
-        await new CacheClearCommand().handler({ ...this.args } as any)
+        await new CacheClearCommand().handler({ ...this.args, dataSource: '' } as any)
         break
       case 'entity:create':
-        await new EntityCreateCommand().handler({ path: path.join(typeormModule.config.entitiesDir, this.args.name || this.args.n) } as any)
+        await new EntityCreateCommand().handler({ path: path.join(typeormModule.config.entitiesDir, this.args.name || this.args.n), dataSource: '' } as any)
         break
       case 'migration:create':
-        await new MigrationCreateCommand().handler({ path: path.join(typeormModule.config.migrationsDir, this.args.name || this.args.n), ...this.args } as any)
+        await new MigrationCreateCommand().handler({ path: path.join(typeormModule.config.migrationsDir, this.args.name || this.args.n), ...this.args, dataSource: '' } as any)
         break
       case 'migration:generate':
-        await new MigrationGenerateCommand().handler({ path: path.join(typeormModule.config.migrationsDir, this.args.name || this.args.n), ...this.args } as any)
+        await new MigrationGenerateCommand().handler({ path: path.join(typeormModule.config.migrationsDir, this.directiveOptions[0] || ''), ...this.args, dataSource: '' } as any)
         break
       case 'migration:revert':
-        await new MigrationRevertCommand().handler({ ...this.args } as any)
+        await new MigrationRevertCommand().handler({ ...this.args, dataSource: '' } as any)
         break
       case 'migration:run':
-        await new MigrationRunCommand().handler({ ...this.args } as any)
+        await new MigrationRunCommand().handler({ ...this.args, dataSource: '' } as any)
         break
       case 'migration:show':
-        await new MigrationShowCommand().handler({ ...this.args } as any)
+        await new MigrationShowCommand().handler({ ...this.args, dataSource: '' } as any)
         break
       case 'query':
-        await new QueryCommand().handler({ ...this.args } as any)
+        await new QueryCommand().handler({ ...this.args, dataSource: '' } as any)
         break
       case 'schema:drop':
-        await new SchemaDropCommand().handler({ ...this.args } as any)
+        await new SchemaDropCommand().handler({ ...this.args, dataSource: '' } as any)
         break
       case 'schema:log':
-        await new SchemaLogCommand().handler({ ...this.args } as any)
+        await new SchemaLogCommand().handler({ ...this.args, dataSource: '' } as any)
         break
       case 'schema:sync':
-        await new SchemaSyncCommand().handler({ ...this.args } as any)
+        await new SchemaSyncCommand().handler({ ...this.args, dataSource: '' } as any)
         break
       case 'subscriber:create':
-        await new SubscriberCreateCommand().handler({ path: path.join(typeormModule.config.subscribersDir, this.args.name || this.args.n) } as any)
+        await new SubscriberCreateCommand().handler({ path: path.join(typeormModule.config.subscribersDir, this.args.name || this.args.n), dataSource: '' } as any)
         break
       case 'version':
         await new VersionCommand().handler()
