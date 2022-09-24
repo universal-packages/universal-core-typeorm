@@ -9,21 +9,21 @@ export default class TypeormModule extends CoreModule<TypeormModuleConfig> {
   public static readonly moduleName = 'typeorm-module'
   public static readonly description = 'Typeorm core module wrappers'
 
-  public dataSource: DataSource
+  public subject: DataSource
 
   public async prepare(): Promise<void> {
     const terminalTransport = this.logger.getTransport('terminal') as TerminalTransport
     terminalTransport.options.categoryColors['TYPEORM'] = 'PURPLE'
 
     if (this.config) {
-      this.dataSource = new DataSource({ ...this.config.dataSource, logger: new TypeormLogger(this.logger) })
-      await this.dataSource.initialize()
+      this.subject = new DataSource({ ...this.config.dataSource, logger: new TypeormLogger(this.logger) })
+      await this.subject.initialize()
     } else {
-      this.logger.publish('WARNING', 'Typeorm configuration pendding')
+      this.logger.publish('WARNING', 'Typeorm configuration pending')
     }
   }
 
   public async release(): Promise<void> {
-    if (this.dataSource && this.dataSource.isInitialized) await this.dataSource.destroy()
+    if (this.subject && this.subject.isInitialized) await this.subject.destroy()
   }
 }

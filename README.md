@@ -18,16 +18,24 @@ npm install @universal-packages/core-typeorm
 ucore exec typeorm-task init
 ```
 
-## Access datasource
+## Global
 
-Core will expose the module `typeormModule` as a global if configured or in the core global object as in `coreModules`.
+Typeorm expose the `DataSource` as the global subject if core `modulesAsGlobals` config is true.
 
 ```js
-typeormModule.dataSource.set()
+typeormSubject.manager.find()
 ```
 
 ```js
-core.coreModules['typeorm-module'].dataSource.set()
+core.coreModules.typeormModule.subject.manager.find()
+```
+
+### Typescript
+
+In order for typescript to see the `typeormSubject` global you need to reference the types somewhere in your project, normally `./src/globals.ts`.
+
+```ts
+/// <reference types="@universal-packages/core-typeorm" />
 ```
 
 ## Typeorm cli
@@ -46,9 +54,9 @@ Do
 ucore exec typeorm-task <command> <options>
 ```
 
-All comand will behave the same, except that the data source always will be set from the TypeormModule that gets the configuration through universal-core config system.
+All command will behave the same, except that the data source always will be set from the TypeormModule that gets the configuration through universal-core config system.
 
-Also the `init` will only pupulate your current project with the typeorm template.
+Also the `init` will only populate your current project with the typeorm template.
 
 ## Typescript
 

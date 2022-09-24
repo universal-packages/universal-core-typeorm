@@ -16,18 +16,22 @@ import { SchemaLogCommand } from 'typeorm/commands/SchemaLogCommand'
 import { SchemaSyncCommand } from 'typeorm/commands/SchemaSyncCommand'
 import { SubscriberCreateCommand } from 'typeorm/commands/SubscriberCreateCommand'
 import { VersionCommand } from 'typeorm/commands/VersionCommand'
+import TypeormModule from './a.Typeorm.universal-core-module'
 
 export default class TypeormTask extends CoreTask {
   public static readonly taskName = 'typeorm-task'
   public static readonly description = 'Typeorm cli commands analogic task'
 
   public async prepare(): Promise<void> {
-    if (typeormModule.dataSource && typeormModule.dataSource.isInitialized) await typeormModule.dataSource.destroy()
-    CommandUtils.loadDataSource = async (): Promise<DataSource> => typeormModule.dataSource
+    const typeormModule = core.coreModules.typeormModule as TypeormModule
+    await typeormModule.subject.destroy()
+    CommandUtils.loadDataSource = async (): Promise<DataSource> => typeormModule.subject
     console.log = (...entries: string[]): void => this.logger.publish('INFO', null, entries.join(' '), 'TYPEORM')
   }
 
   public async exec(): Promise<void> {
+    const typeormModule = core.coreModules.typeormModule as TypeormModule
+
     switch (this.directive) {
       case 'init':
         await populateTemplates(path.resolve(__dirname, 'template'), './src', { override: this.args.f })

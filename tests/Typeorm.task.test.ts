@@ -35,7 +35,8 @@ jest.mock('typeorm/commands/VersionCommand')
 describe('TypeormTask', (): void => {
   it('behaves as expected', async (): Promise<void> => {
     const logger = new Logger({ silence: true })
-    global.typeormModule = new TypeormModule({ entitiesDir: 'a', migrationsDir: 'a', subscribersDir: 'a' } as any, logger)
+    const typeormModule = new TypeormModule({ entitiesDir: 'a', migrationsDir: 'a', subscribersDir: 'a' } as any, logger)
+    global.core = { coreModules: { typeormModule } } as any
     typeormModule.prepare()
 
     let task = new TypeormTask('init', [], {}, logger, {})
