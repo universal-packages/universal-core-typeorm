@@ -20,7 +20,7 @@ ucore exec typeorm-task init
 
 ## Global
 
-Typeorm expose the `DataSource` as the global subject if core `modulesAsGlobals` config is true.
+Core expose `DataSource` as the global subject if core `modulesAsGlobals` config is true.
 
 ```js
 typeormSubject.manager.find()
