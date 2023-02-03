@@ -40,72 +40,58 @@ describe('TypeormTask', (): void => {
     typeormModule.prepare()
 
     let task = new TypeormTask('init', [], {}, logger)
-    await task.prepare()
     await task.exec()
     expect(populateTemplates).toHaveBeenCalled()
 
     task = new TypeormTask('cache:clear', [], {}, logger)
-    await task.prepare()
     await task.exec()
     expect(CacheClearCommand).toHaveBeenCalled()
 
     task = new TypeormTask('entity:create', [], { name: 'b' }, logger)
-    await task.prepare()
     await task.exec()
     expect(EntityCreateCommand).toHaveBeenCalled()
 
     task = new TypeormTask('migration:create', [], { name: 'b' }, logger)
-    await task.prepare()
     await task.exec()
     expect(MigrationCreateCommand).toHaveBeenCalled()
 
     task = new TypeormTask('migration:generate', [], { name: 'b' }, logger)
-    await task.prepare()
     await task.exec()
     expect(MigrationGenerateCommand).toHaveBeenCalled()
 
     task = new TypeormTask('migration:revert', [], {}, logger)
-    await task.prepare()
     await task.exec()
     expect(MigrationRevertCommand).toHaveBeenCalled()
 
     task = new TypeormTask('migration:run', [], {}, logger)
-    await task.prepare()
     await task.exec()
     expect(MigrationRunCommand).toHaveBeenCalled()
 
     task = new TypeormTask('migration:show', [], {}, logger)
-    await task.prepare()
     await task.exec()
     expect(MigrationShowCommand).toHaveBeenCalled()
 
     task = new TypeormTask('query', [], {}, logger)
-    await task.prepare()
     await task.exec()
     expect(QueryCommand).toHaveBeenCalled()
 
     task = new TypeormTask('schema:drop', [], {}, logger)
-    await task.prepare()
     await task.exec()
     expect(SchemaDropCommand).toHaveBeenCalled()
 
     task = new TypeormTask('schema:log', [], {}, logger)
-    await task.prepare()
     await task.exec()
     expect(SchemaLogCommand).toHaveBeenCalled()
 
     task = new TypeormTask('schema:sync', [], {}, logger)
-    await task.prepare()
     await task.exec()
     expect(SchemaSyncCommand).toHaveBeenCalled()
 
     task = new TypeormTask('subscriber:create', [], { name: 'b' }, logger)
-    await task.prepare()
     await task.exec()
     expect(SubscriberCreateCommand).toHaveBeenCalled()
 
     task = new TypeormTask('version', [], {}, logger)
-    await task.prepare()
     await task.exec()
     expect(VersionCommand).toHaveBeenCalled()
 

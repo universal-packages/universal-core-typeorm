@@ -22,15 +22,11 @@ export default class TypeormTask extends CoreTask {
   public static readonly taskName = 'typeorm-task'
   public static readonly description = 'Typeorm cli commands analogic task'
 
-  public async prepare(): Promise<void> {
+  public async exec(): Promise<void> {
     const typeormModule = core.coreModules.typeormModule as TypeormModule
     await typeormModule.subject.destroy()
     CommandUtils.loadDataSource = async (): Promise<DataSource> => typeormModule.subject
     console.log = (...entries: string[]): void => this.logger.publish('INFO', null, entries.join(' '), 'TYPEORM')
-  }
-
-  public async exec(): Promise<void> {
-    const typeormModule = core.coreModules.typeormModule as TypeormModule
 
     switch (this.directive) {
       case 'init':
