@@ -19,6 +19,7 @@ import { SchemaSyncCommand } from 'typeorm/commands/SchemaSyncCommand'
 import { SubscriberCreateCommand } from 'typeorm/commands/SubscriberCreateCommand'
 import { VersionCommand } from 'typeorm/commands/VersionCommand'
 import TypeormModule from './a.Typeorm.universal-core-module'
+import { TypeormLogger } from './TypeormLogger'
 
 export default class TypeormTask extends CoreTask {
   public static readonly taskName = 'typeorm-task'
@@ -31,6 +32,10 @@ export default class TypeormTask extends CoreTask {
     this.dataSource = typeormModule.subject
     CommandUtils.loadDataSource = async (): Promise<DataSource> => this.dataSource
     console.log = (...entries: string[]): void => this.logger.publish('INFO', null, entries.join(' '), 'TYPEORM')
+    const actualExit = process.exit
+    process.exit = ((code?: number): void => {
+      if (code) actualExit(code)
+    }) as any
 
     switch (this.directive) {
       case 'init':
@@ -188,7 +193,7 @@ export default class TypeormTask extends CoreTask {
 
     for (let i = 1; i <= cpuCount; i++) {
       const testDbName = this.getDBName(baseName, i)
-      this.dataSource = new DataSource({ ...typeormModule.config.dataSource, database: testDbName as any, logging: false })
+      this.dataSource = new DataSource({ ...typeormModule.config.dataSource, database: testDbName as any, logger: new TypeormLogger(this.logger, true) })
 
       await new MigrationRunCommand().handler({ ...this.args, dataSource: '' } as any)
 
