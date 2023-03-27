@@ -1,3 +1,5 @@
+import { exec } from 'child_process'
+import os from 'os'
 import { CoreTask } from '@universal-packages/core'
 import { populateTemplates } from '@universal-packages/template-populator'
 import path from 'path'
@@ -32,6 +34,19 @@ export default class TypeormTask extends CoreTask {
       case 'init':
         await populateTemplates(path.resolve(__dirname, 'template'), './src', { override: this.args.f })
         this.logger.publish('INFO', 'Typeorm template initialized')
+        break
+      case 'db:create':
+        await this.createDB(typeormModule.config.dataSource.type, typeormModule.config.dataSource.database as string)
+
+        if (process.env['NODE_ENV'] !== 'production') {
+          await this.createTestDB(typeormModule.config.dataSource.type, typeormModule.config.dataSource.database as string)
+        }
+        break
+      case 'db:drop':
+        await this.dropDB(typeormModule.config.dataSource.type, typeormModule.config.dataSource.database as string)
+        if (process.env['NODE_ENV'] !== 'production') {
+          await this.dropTestDB(typeormModule.config.dataSource.type, typeormModule.config.dataSource.database as string)
+        }
         break
       case 'cache:clear':
         await new CacheClearCommand().handler({ ...this.args, dataSource: '' } as any)
@@ -75,5 +90,88 @@ export default class TypeormTask extends CoreTask {
       default:
         throw new Error('Unrecognized Typeorm command')
     }
+  }
+
+  private async createDB(type: string, name: string): Promise<void> {
+    switch (type) {
+      case 'postgres':
+        await this.execCommand(`createdb ${name}`)
+        break
+      case 'mysql':
+        await this.execCommand(`mysql -e "CREATE DATABASE IF NOT EXISTS ${name};"`)
+        break
+      case 'mariadb':
+        await this.execCommand(`mysql -e "CREATE DATABASE IF NOT EXISTS ${name};"`)
+        break
+      case 'sqlite':
+        await this.execCommand(`touch ${name}`)
+        break
+      case 'mssql':
+        await this.execCommand(`sqlcmd -Q "CREATE DATABASE ${name}"`)
+        break
+      default:
+        throw new Error('Unrecognized database type')
+    }
+  }
+
+  private async dropDB(type: string, name: string): Promise<void> {
+    switch (type) {
+      case 'postgres':
+        await this.execCommand(`dropdb ${name}`)
+        break
+      case 'mysql':
+        await this.execCommand(`mysql -e "DROP DATABASE IF EXISTS ${name};"`)
+        break
+      case 'mariadb':
+        await this.execCommand(`mysql -e "DROP DATABASE IF EXISTS ${name};"`)
+        break
+      case 'sqlite':
+        await this.execCommand(`rm ${name}`)
+        break
+      case 'mssql':
+        await this.execCommand(`sqlcmd -Q "DROP DATABASE ${name}"`)
+        break
+      default:
+        throw new Error('Unrecognized database type')
+    }
+  }
+
+  private async createTestDB(type: string, baseName: string): Promise<void> {
+    const cpuCount = os.cpus().length
+
+    for (let i = 1; i <= cpuCount; i++) {
+      const baseTestDBName = baseName.includes('development') ? baseName.replace(/development/, 'test') : `${baseName}-test`
+      const testDbName = `${baseTestDBName}-${i}`
+
+      try {
+        await this.createDB(type, testDbName)
+      } catch (error) {
+        this.logger.publish('WARNING', 'Create db error', error.message, 'TYPEORM')
+      }
+    }
+  }
+
+  private async dropTestDB(type: string, baseName: string): Promise<void> {
+    const cpuCount = os.cpus().length
+
+    for (let i = 1; i <= cpuCount; i++) {
+      const baseTestDBName = baseName.includes('development') ? baseName.replace(/development/, 'test') : `${baseName}-test`
+      const testDbName = `${baseTestDBName}-${i}`
+
+      try {
+        await this.dropDB(type, testDbName)
+      } catch (error) {
+        this.logger.publish('WARNING', 'Drop db error', error.message, 'TYPEORM')
+      }
+    }
+  }
+
+  private execCommand(command: string): Promise<void> {
+    return new Promise((resolve, reject): void => {
+      exec(command, (error: Error): void => {
+        if (error) reject(error)
+        resolve()
+      })
+    })
   }
 }

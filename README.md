@@ -54,9 +54,33 @@ Do
 ucore exec typeorm-task <command> <options>
 ```
 
-All command will behave the same, except that the data source always will be set from the TypeormModule that gets the configuration through universal-core config system.
+All commands will behave the same, except that the data source always will be set from the TypeormModule that gets the configuration through universal-core config system.
 
-Also the `init` will only populate your current project with the typeorm template.
+## Additional cli
+
+### Init
+
+The `init` will only populate your current project with the typeorm template.
+
+```shell
+ucore exec typeorm-task init
+```
+
+### Crate DB
+
+Creates the configured db using the right adapter. In non production environments it creates the analogous test dbs named `your-development-db-name-<test>-<cpu-#>`
+
+```shell
+ucore exec typeorm-task db:create
+```
+
+### Drop DB
+
+Drops the configured db using the right adapter. In non production environments it drops the analogous test dbs named `your-development-db-name-<test>-<cpu-#>`
+
+```shell
+ucore exec typeorm-task db:create
+```
 
 ## Typescript
 
