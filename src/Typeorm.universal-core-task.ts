@@ -24,9 +24,12 @@ export default class TypeormTask extends CoreTask {
   public static readonly taskName = 'typeorm-task'
   public static readonly description = 'Typeorm cli commands analogic task'
 
+  private dataSource: DataSource
+
   public async exec(): Promise<void> {
     const typeormModule = core.coreModules.typeormModule as TypeormModule
-    CommandUtils.loadDataSource = async (): Promise<DataSource> => typeormModule.subject
+    this.dataSource = typeormModule.subject
+    CommandUtils.loadDataSource = async (): Promise<DataSource> => this.dataSource
     console.log = (...entries: string[]): void => this.logger.publish('INFO', null, entries.join(' '), 'TYPEORM')
 
     switch (this.directive) {
@@ -38,13 +41,14 @@ export default class TypeormTask extends CoreTask {
         await this.createDB(typeormModule.config.dataSource.type, typeormModule.config.dataSource.database as string)
 
         if (process.env['NODE_ENV'] === 'development') {
-          await this.createTestDB(typeormModule.config.dataSource.type, typeormModule.config.dataSource.database as string)
+          await this.createTestDB()
         }
         break
       case 'db:drop':
         await this.dropDB(typeormModule.config.dataSource.type, typeormModule.config.dataSource.database as string)
+
         if (process.env['NODE_ENV'] === 'development') {
-          await this.dropTestDB(typeormModule.config.dataSource.type, typeormModule.config.dataSource.database as string)
+          await this.dropTestDB()
         }
         break
       case 'cache:clear':
@@ -64,6 +68,10 @@ export default class TypeormTask extends CoreTask {
         break
       case 'migration:run':
         await new MigrationRunCommand().handler({ ...this.args, dataSource: '' } as any)
+
+        if (process.env['NODE_ENV'] === 'development') {
+          await this.migrateTestDB()
+        }
         break
       case 'migration:show':
         await new MigrationShowCommand().handler({ ...this.args, dataSource: '' } as any)
@@ -111,6 +119,8 @@ export default class TypeormTask extends CoreTask {
       default:
         throw new Error('Unrecognized database type')
     }
+
+    this.logger.publish('QUERY', 'Database created', name, 'TYPEORM', { metadata: { type, name } })
   }
 
   private async dropDB(type: string, name: string): Promise<void> {
@@ -133,14 +143,18 @@ export default class TypeormTask extends CoreTask {
       default:
         throw new Error('Unrecognized database type')
     }
+
+    this.logger.publish('QUERY', 'Database dropped', name, 'TYPEORM', { metadata: { type, name } })
   }
 
-  private async createTestDB(type: string, baseName: string): Promise<void> {
+  private async createTestDB(): Promise<void> {
+    const typeormModule = core.coreModules.typeormModule as TypeormModule
+    const type = typeormModule.config.dataSource.type
+    const baseName = typeormModule.config.dataSource.database as string
     const cpuCount = os.cpus().length
 
     for (let i = 1; i <= cpuCount; i++) {
-      const baseTestDBName = baseName.includes('development') ? baseName.replace(/development/, 'test') : `${baseName}-test`
-      const testDbName = `${baseTestDBName}-${i}`
+      const testDbName = this.getDBName(baseName, i)
 
       try {
         await this.createDB(type, testDbName)
@@ -150,18 +164,35 @@ export default class TypeormTask extends CoreTask {
     }
   }
 
-  private async dropTestDB(type: string, baseName: string): Promise<void> {
+  private async dropTestDB(): Promise<void> {
+    const typeormModule = core.coreModules.typeormModule as TypeormModule
+    const type = typeormModule.config.dataSource.type
+    const baseName = typeormModule.config.dataSource.database as string
     const cpuCount = os.cpus().length
 
     for (let i = 1; i <= cpuCount; i++) {
-      const baseTestDBName = baseName.includes('development') ? baseName.replace(/development/, 'test') : `${baseName}-test`
-      const testDbName = `${baseTestDBName}-${i}`
+      const testDbName = this.getDBName(baseName, i)
 
       try {
         await this.dropDB(type, testDbName)
       } catch (error) {
         this.logger.publish('WARNING', 'Drop db error', error.message, 'TYPEORM')
       }
+    }
+  }
+
+  private async migrateTestDB(): Promise<void> {
+    const typeormModule = core.coreModules.typeormModule as TypeormModule
+    const baseName = typeormModule.config.dataSource.database as string
+    const cpuCount = os.cpus().length
+
+    for (let i = 1; i <= cpuCount; i++) {
+      const testDbName = this.getDBName(baseName, i)
+      this.dataSource = new DataSource({ ...typeormModule.config.dataSource, database: testDbName as any, logging: false })
+
+      await new MigrationRunCommand().handler({ ...this.args, dataSource: '' } as any)
+
+      this.logger.publish('QUERY', 'Test database migrated', testDbName, 'TYPEORM')
     }
   }
 
@@ -172,5 +203,10 @@ export default class TypeormTask extends CoreTask {
         resolve()
       })
     })
+  }
+
+  private getDBName(baseName: string, cpuIndex: number): string {
+    const baseTestDBName = baseName.includes('development') ? baseName.replace(/development/, 'test') : `${baseName}-test`
+    return `${baseTestDBName}-${cpuIndex}`
   }
 }
