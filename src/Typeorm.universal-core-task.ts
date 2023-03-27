@@ -26,7 +26,6 @@ export default class TypeormTask extends CoreTask {
 
   public async exec(): Promise<void> {
     const typeormModule = core.coreModules.typeormModule as TypeormModule
-    await typeormModule.subject.destroy()
     CommandUtils.loadDataSource = async (): Promise<DataSource> => typeormModule.subject
     console.log = (...entries: string[]): void => this.logger.publish('INFO', null, entries.join(' '), 'TYPEORM')
 
@@ -38,13 +37,13 @@ export default class TypeormTask extends CoreTask {
       case 'db:create':
         await this.createDB(typeormModule.config.dataSource.type, typeormModule.config.dataSource.database as string)
 
-        if (process.env['NODE_ENV'] !== 'production') {
+        if (process.env['NODE_ENV'] === 'development') {
           await this.createTestDB(typeormModule.config.dataSource.type, typeormModule.config.dataSource.database as string)
         }
         break
       case 'db:drop':
         await this.dropDB(typeormModule.config.dataSource.type, typeormModule.config.dataSource.database as string)
-        if (process.env['NODE_ENV'] !== 'production') {
+        if (process.env['NODE_ENV'] === 'development') {
           await this.dropTestDB(typeormModule.config.dataSource.type, typeormModule.config.dataSource.database as string)
         }
         break

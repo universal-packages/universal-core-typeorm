@@ -17,7 +17,12 @@ export default class TypeormModule extends CoreModule<TypeormModuleConfig> {
 
     if (this.config) {
       this.subject = new DataSource({ ...this.config.dataSource, logger: new TypeormLogger(this.logger) })
-      await this.subject.initialize()
+
+      // We avoid to initialize the subject if we are in the task
+      // so it doesn't complain about the missing db if we are creating it
+      if (!global['TYPE_ORM_TASK']) {
+        await this.subject.initialize()
+      }
     } else {
       this.logger.publish('WARNING', 'Typeorm configuration pending')
     }

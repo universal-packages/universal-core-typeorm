@@ -79,7 +79,7 @@ ucore exec typeorm-task db:create
 Drops the configured db using the right adapter. In non production environments it drops the analogous test dbs named `your-development-db-name-<test>-<cpu-#>`
 
 ```shell
-ucore exec typeorm-task db:create
+ucore exec typeorm-task db:drop
 ```
 
 ## Typescript
