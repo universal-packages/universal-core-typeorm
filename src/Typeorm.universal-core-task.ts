@@ -111,15 +111,16 @@ export default class TypeormTask extends CoreTask {
 
   private async createDB(type: string, name: string): Promise<void> {
     let options = ''
+    let passwordEnv = ''
 
     switch (type) {
       case 'postgres':
         if (this.typeormModule.config.dataSource['username']) options += ` -U ${this.typeormModule.config.dataSource['username']}`
-        if (this.typeormModule.config.dataSource['password']) options += ` -W ${this.typeormModule.config.dataSource['password']}`
+        if (this.typeormModule.config.dataSource['password']) passwordEnv = `PGPASSWORD=${this.typeormModule.config.dataSource['password']} `
         if (this.typeormModule.config.dataSource['host']) options += ` -h ${this.typeormModule.config.dataSource['host']}`
         if (this.typeormModule.config.dataSource['port']) options += ` -p ${this.typeormModule.config.dataSource['port']}`
 
-        await this.execCommand(`createdb ${name} ${options}`)
+        await this.execCommand(`${passwordEnv}createdb ${name} ${options}`)
         break
       case 'mysql':
         if (this.typeormModule.config.dataSource['username']) options += ` -u ${this.typeormModule.config.dataSource['username']}`
@@ -127,7 +128,7 @@ export default class TypeormTask extends CoreTask {
         if (this.typeormModule.config.dataSource['host']) options += ` -h ${this.typeormModule.config.dataSource['host']}`
         if (this.typeormModule.config.dataSource['port']) options += ` -P ${this.typeormModule.config.dataSource['port']}`
 
-        await this.execCommand(`mysql -e "CREATE DATABASE IF NOT EXISTS ${name} ${options};"`)
+        await this.execCommand(`mysql -e "CREATE DATABASE IF NOT EXISTS ${name};" ${options}`)
         break
       case 'mariadb':
         if (this.typeormModule.config.dataSource['username']) options += ` -u ${this.typeormModule.config.dataSource['username']}`
@@ -135,7 +136,7 @@ export default class TypeormTask extends CoreTask {
         if (this.typeormModule.config.dataSource['host']) options += ` -h ${this.typeormModule.config.dataSource['host']}`
         if (this.typeormModule.config.dataSource['port']) options += ` -P ${this.typeormModule.config.dataSource['port']}`
 
-        await this.execCommand(`mysql -e "CREATE DATABASE IF NOT EXISTS ${name} ${options};"`)
+        await this.execCommand(`mysql -e "CREATE DATABASE IF NOT EXISTS ${name};" ${options}`)
         break
       case 'sqlite':
         await this.execCommand(`touch ${name}`)
@@ -146,7 +147,7 @@ export default class TypeormTask extends CoreTask {
         if (this.typeormModule.config.dataSource['host']) options += ` -S ${this.typeormModule.config.dataSource['host']}`
         if (this.typeormModule.config.dataSource['port']) options += ` -P ${this.typeormModule.config.dataSource['port']}`
 
-        await this.execCommand(`sqlcmd -Q "CREATE DATABASE ${name} ${options};"`)
+        await this.execCommand(`sqlcmd -Q "CREATE DATABASE ${name};" ${options}`)
         break
       default:
         throw new Error('Unrecognized database type')
@@ -157,11 +158,12 @@ export default class TypeormTask extends CoreTask {
 
   private async dropDB(type: string, name: string): Promise<void> {
     let options = ''
+    let passwordEnv = ''
 
     switch (type) {
       case 'postgres':
         if (this.typeormModule.config.dataSource['username']) options += ` -U ${this.typeormModule.config.dataSource['username']}`
-        if (this.typeormModule.config.dataSource['password']) options += ` -W ${this.typeormModule.config.dataSource['password']}`
+        if (this.typeormModule.config.dataSource['password']) passwordEnv = `PGPASSWORD=${this.typeormModule.config.dataSource['password']} `
         if (this.typeormModule.config.dataSource['host']) options += ` -h ${this.typeormModule.config.dataSource['host']}`
         if (this.typeormModule.config.dataSource['port']) options += ` -p ${this.typeormModule.config.dataSource['port']}`
 
