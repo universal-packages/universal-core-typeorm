@@ -26,10 +26,10 @@ export default class TypeormTask extends CoreTask {
   public static readonly description = 'Typeorm cli commands analogic task'
 
   private dataSource: DataSource
+  private typeormModule = core.coreModules.typeormModule as TypeormModule
 
   public async exec(): Promise<void> {
-    const typeormModule = core.coreModules.typeormModule as TypeormModule
-    this.dataSource = typeormModule.subject
+    this.dataSource = this.typeormModule.subject
     CommandUtils.loadDataSource = async (): Promise<DataSource> => this.dataSource
     console.log = (...entries: string[]): void => this.logger.publish('INFO', null, entries.join(' '), 'TYPEORM')
     const actualExit = process.exit
@@ -43,14 +43,14 @@ export default class TypeormTask extends CoreTask {
         this.logger.publish('INFO', 'Typeorm template initialized')
         break
       case 'db:create':
-        await this.createDB(typeormModule.config.dataSource.type, typeormModule.config.dataSource.database as string)
+        await this.createDB(this.typeormModule.config.dataSource.type, this.typeormModule.config.dataSource.database as string)
 
         if (process.env['NODE_ENV'] === 'development') {
           await this.createTestDB()
         }
         break
       case 'db:drop':
-        await this.dropDB(typeormModule.config.dataSource.type, typeormModule.config.dataSource.database as string)
+        await this.dropDB(this.typeormModule.config.dataSource.type, this.typeormModule.config.dataSource.database as string)
 
         if (process.env['NODE_ENV'] === 'development') {
           await this.dropTestDB()
@@ -60,13 +60,17 @@ export default class TypeormTask extends CoreTask {
         await new CacheClearCommand().handler({ ...this.args, dataSource: '' } as any)
         break
       case 'entity:create':
-        await new EntityCreateCommand().handler({ path: path.join(typeormModule.config.entitiesDir, this.args.name || this.args.n), dataSource: '' } as any)
+        await new EntityCreateCommand().handler({ path: path.join(this.typeormModule.config.entitiesDir, this.args.name || this.args.n), dataSource: '' } as any)
         break
       case 'migration:create':
-        await new MigrationCreateCommand().handler({ path: path.join(typeormModule.config.migrationsDir, this.args.name || this.args.n), ...this.args, dataSource: '' } as any)
+        await new MigrationCreateCommand().handler({ path: path.join(this.typeormModule.config.migrationsDir, this.args.name || this.args.n), ...this.args, dataSource: '' } as any)
         break
       case 'migration:generate':
-        await new MigrationGenerateCommand().handler({ path: path.join(typeormModule.config.migrationsDir, this.directiveOptions[0] || ''), ...this.args, dataSource: '' } as any)
+        await new MigrationGenerateCommand().handler({
+          path: path.join(this.typeormModule.config.migrationsDir, this.directiveOptions[0] || ''),
+          ...this.args,
+          dataSource: ''
+        } as any)
         break
       case 'migration:revert':
         await new MigrationRevertCommand().handler({ ...this.args, dataSource: '' } as any)
@@ -94,7 +98,7 @@ export default class TypeormTask extends CoreTask {
         await new SchemaSyncCommand().handler({ ...this.args, dataSource: '' } as any)
         break
       case 'subscriber:create':
-        await new SubscriberCreateCommand().handler({ path: path.join(typeormModule.config.subscribersDir, this.args.name || this.args.n), dataSource: '' } as any)
+        await new SubscriberCreateCommand().handler({ path: path.join(this.typeormModule.config.subscribersDir, this.args.name || this.args.n), dataSource: '' } as any)
         break
       case 'version':
         await new VersionCommand().handler()
@@ -105,21 +109,43 @@ export default class TypeormTask extends CoreTask {
   }
 
   private async createDB(type: string, name: string): Promise<void> {
+    let options = ''
+
     switch (type) {
       case 'postgres':
-        await this.execCommand(`createdb ${name}`)
+        if (this.typeormModule.config.dataSource['username']) options += ` -U ${this.typeormModule.config.dataSource['username']}`
+        if (this.typeormModule.config.dataSource['password']) options += ` -W ${this.typeormModule.config.dataSource['password']}`
+        if (this.typeormModule.config.dataSource['host']) options += ` -h ${this.typeormModule.config.dataSource['host']}`
+        if (this.typeormModule.config.dataSource['port']) options += ` -p ${this.typeormModule.config.dataSource['port']}`
+
+        await this.execCommand(`createdb ${name} ${options}`)
         break
       case 'mysql':
-        await this.execCommand(`mysql -e "CREATE DATABASE IF NOT EXISTS ${name};"`)
+        if (this.typeormModule.config.dataSource['username']) options += ` -u ${this.typeormModule.config.dataSource['username']}`
+        if (this.typeormModule.config.dataSource['password']) options += ` -p${this.typeormModule.config.dataSource['password']}`
+        if (this.typeormModule.config.dataSource['host']) options += ` -h ${this.typeormModule.config.dataSource['host']}`
+        if (this.typeormModule.config.dataSource['port']) options += ` -P ${this.typeormModule.config.dataSource['port']}`
+
+        await this.execCommand(`mysql -e "CREATE DATABASE IF NOT EXISTS ${name} ${options};"`)
         break
       case 'mariadb':
-        await this.execCommand(`mysql -e "CREATE DATABASE IF NOT EXISTS ${name};"`)
+        if (this.typeormModule.config.dataSource['username']) options += ` -u ${this.typeormModule.config.dataSource['username']}`
+        if (this.typeormModule.config.dataSource['password']) options += ` -p${this.typeormModule.config.dataSource['password']}`
+        if (this.typeormModule.config.dataSource['host']) options += ` -h ${this.typeormModule.config.dataSource['host']}`
+        if (this.typeormModule.config.dataSource['port']) options += ` -P ${this.typeormModule.config.dataSource['port']}`
+
+        await this.execCommand(`mysql -e "CREATE DATABASE IF NOT EXISTS ${name} ${options};"`)
         break
       case 'sqlite':
         await this.execCommand(`touch ${name}`)
         break
       case 'mssql':
-        await this.execCommand(`sqlcmd -Q "CREATE DATABASE ${name}"`)
+        if (this.typeormModule.config.dataSource['username']) options += ` -U ${this.typeormModule.config.dataSource['username']}`
+        if (this.typeormModule.config.dataSource['password']) options += ` -P ${this.typeormModule.config.dataSource['password']}`
+        if (this.typeormModule.config.dataSource['host']) options += ` -S ${this.typeormModule.config.dataSource['host']}`
+        if (this.typeormModule.config.dataSource['port']) options += ` -P ${this.typeormModule.config.dataSource['port']}`
+
+        await this.execCommand(`sqlcmd -Q "CREATE DATABASE ${name} ${options};"`)
         break
       default:
         throw new Error('Unrecognized database type')
@@ -129,21 +155,43 @@ export default class TypeormTask extends CoreTask {
   }
 
   private async dropDB(type: string, name: string): Promise<void> {
+    let options = ''
+
     switch (type) {
       case 'postgres':
-        await this.execCommand(`dropdb ${name}`)
+        if (this.typeormModule.config.dataSource['username']) options += ` -U ${this.typeormModule.config.dataSource['username']}`
+        if (this.typeormModule.config.dataSource['password']) options += ` -W ${this.typeormModule.config.dataSource['password']}`
+        if (this.typeormModule.config.dataSource['host']) options += ` -h ${this.typeormModule.config.dataSource['host']}`
+        if (this.typeormModule.config.dataSource['port']) options += ` -p ${this.typeormModule.config.dataSource['port']}`
+
+        await this.execCommand(`dropdb ${name} ${options}`)
         break
       case 'mysql':
-        await this.execCommand(`mysql -e "DROP DATABASE IF EXISTS ${name};"`)
+        if (this.typeormModule.config.dataSource['username']) options += ` -u ${this.typeormModule.config.dataSource['username']}`
+        if (this.typeormModule.config.dataSource['password']) options += ` -p${this.typeormModule.config.dataSource['password']}`
+        if (this.typeormModule.config.dataSource['host']) options += ` -h ${this.typeormModule.config.dataSource['host']}`
+        if (this.typeormModule.config.dataSource['port']) options += ` -P ${this.typeormModule.config.dataSource['port']}`
+
+        await this.execCommand(`mysql -e "DROP DATABASE IF EXISTS ${name};" ${options}`)
         break
       case 'mariadb':
-        await this.execCommand(`mysql -e "DROP DATABASE IF EXISTS ${name};"`)
+        if (this.typeormModule.config.dataSource['username']) options += ` -u ${this.typeormModule.config.dataSource['username']}`
+        if (this.typeormModule.config.dataSource['password']) options += ` -p${this.typeormModule.config.dataSource['password']}`
+        if (this.typeormModule.config.dataSource['host']) options += ` -h ${this.typeormModule.config.dataSource['host']}`
+        if (this.typeormModule.config.dataSource['port']) options += ` -P ${this.typeormModule.config.dataSource['port']}`
+
+        await this.execCommand(`mysql -e "DROP DATABASE IF EXISTS ${name};" ${options}`)
         break
       case 'sqlite':
         await this.execCommand(`rm ${name}`)
         break
       case 'mssql':
-        await this.execCommand(`sqlcmd -Q "DROP DATABASE ${name}"`)
+        if (this.typeormModule.config.dataSource['username']) options += ` -U ${this.typeormModule.config.dataSource['username']}`
+        if (this.typeormModule.config.dataSource['password']) options += ` -P ${this.typeormModule.config.dataSource['password']}`
+        if (this.typeormModule.config.dataSource['host']) options += ` -S ${this.typeormModule.config.dataSource['host']}`
+        if (this.typeormModule.config.dataSource['port']) options += ` -P ${this.typeormModule.config.dataSource['port']}`
+
+        await this.execCommand(`sqlcmd -Q "DROP DATABASE ${name};" ${options}`)
         break
       default:
         throw new Error('Unrecognized database type')
