@@ -111,16 +111,16 @@ export default class TypeormTask extends CoreTask {
 
   private async createDB(type: string, name: string): Promise<void> {
     let options = ''
-    let passwordEnv = ''
+    let environment = {}
 
     switch (type) {
       case 'postgres':
         if (this.typeormModule.config.dataSource['username']) options += ` -U ${this.typeormModule.config.dataSource['username']}`
-        if (this.typeormModule.config.dataSource['password']) passwordEnv = `PGPASSWORD=${this.typeormModule.config.dataSource['password']} `
+        if (this.typeormModule.config.dataSource['password']) environment['PGPASSWORD'] = this.typeormModule.config.dataSource['password']
         if (this.typeormModule.config.dataSource['host']) options += ` -h ${this.typeormModule.config.dataSource['host']}`
         if (this.typeormModule.config.dataSource['port']) options += ` -p ${this.typeormModule.config.dataSource['port']}`
 
-        await this.execCommand(`${passwordEnv}createdb ${name} ${options}`)
+        await this.execCommand(`createdb ${name} ${options}`, environment)
         break
       case 'mysql':
         if (this.typeormModule.config.dataSource['username']) options += ` -u ${this.typeormModule.config.dataSource['username']}`
@@ -158,16 +158,16 @@ export default class TypeormTask extends CoreTask {
 
   private async dropDB(type: string, name: string): Promise<void> {
     let options = ''
-    let passwordEnv = ''
+    let environment = {}
 
     switch (type) {
       case 'postgres':
         if (this.typeormModule.config.dataSource['username']) options += ` -U ${this.typeormModule.config.dataSource['username']}`
-        if (this.typeormModule.config.dataSource['password']) passwordEnv = `PGPASSWORD=${this.typeormModule.config.dataSource['password']} `
+        if (this.typeormModule.config.dataSource['password']) environment['PGPASSWORD'] = this.typeormModule.config.dataSource['password']
         if (this.typeormModule.config.dataSource['host']) options += ` -h ${this.typeormModule.config.dataSource['host']}`
         if (this.typeormModule.config.dataSource['port']) options += ` -p ${this.typeormModule.config.dataSource['port']}`
 
-        await this.execCommand(`dropdb ${name} ${options}`)
+        await this.execCommand(`dropdb ${name} ${options}`, environment)
         break
       case 'mysql':
         if (this.typeormModule.config.dataSource['username']) options += ` -u ${this.typeormModule.config.dataSource['username']}`
@@ -252,9 +252,9 @@ export default class TypeormTask extends CoreTask {
     }
   }
 
-  private execCommand(command: string): Promise<void> {
+  private execCommand(command: string, env: Record<string, any> = {}): Promise<void> {
     return new Promise((resolve, reject): void => {
-      exec(command, (error: Error): void => {
+      exec(command, { env }, (error: Error): void => {
         if (error) reject(error)
         resolve()
       })
