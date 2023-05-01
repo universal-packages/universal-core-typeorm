@@ -254,7 +254,7 @@ export default class TypeormTask extends CoreTask {
 
   private execCommand(command: string, env: Record<string, any> = {}): Promise<void> {
     return new Promise((resolve, reject): void => {
-      exec(command, { env }, (error: Error): void => {
+      exec(command, { env: { ...process.env, ...env } }, (error: Error): void => {
         if (error) reject(error)
         resolve()
       })
