@@ -1,6 +1,6 @@
 import { Logger } from '@universal-packages/logger'
 import { Measurement } from '@universal-packages/time-measurer'
-import { Logger as TOL, QueryRunner } from 'typeorm'
+import { QueryRunner, Logger as TOL } from 'typeorm'
 
 export class TypeormLogger implements TOL {
   private readonly logger: Logger

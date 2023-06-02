@@ -13,6 +13,7 @@ import { SchemaLogCommand } from 'typeorm/commands/SchemaLogCommand'
 import { SchemaSyncCommand } from 'typeorm/commands/SchemaSyncCommand'
 import { SubscriberCreateCommand } from 'typeorm/commands/SubscriberCreateCommand'
 import { VersionCommand } from 'typeorm/commands/VersionCommand'
+
 import { TypeormModule } from '../src'
 import TypeormTask from '../src/Typeorm.universal-core-task'
 

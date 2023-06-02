@@ -2,6 +2,7 @@ import { CoreModule } from '@universal-packages/core'
 import { TerminalTransport } from '@universal-packages/logger'
 import 'reflect-metadata'
 import { DataSource } from 'typeorm'
+
 import { TypeormModuleConfig } from './Typeorm.types'
 import { TypeormLogger } from './TypeormLogger'
 

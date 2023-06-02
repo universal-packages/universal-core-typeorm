@@ -1,5 +1,6 @@
 import { Logger } from '@universal-packages/logger'
 import { DataSource } from 'typeorm'
+
 import { TypeormModule } from '../src'
 
 jest.mock('typeorm')
