@@ -13,6 +13,7 @@
     "test:full": "jest --coverage --verbose",
     "test:clear": "jest --clearCache",
     "format": "prettier --write \"./{src,tests}/**/*.{ts,tsx,js,jsx,json}\"",
+    "update-dependents": "umaintenance update-dependents",
     "typeorm": "typeorm-ts-node-commonjs"
   },
   "dependencies": {
