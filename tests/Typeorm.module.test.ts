@@ -5,7 +5,7 @@ import { TypeormModule } from '../src'
 
 jest.mock('typeorm')
 
-describe('TypeormModule', (): void => {
+describe(TypeormModule, (): void => {
   it('behaves as expected', async (): Promise<void> => {
     const module = new TypeormModule({} as any, new Logger())
 

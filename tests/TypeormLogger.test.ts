@@ -2,7 +2,7 @@ import { Logger } from '@universal-packages/logger'
 
 import { TypeormLogger } from '../src/TypeormLogger'
 
-describe('TypeormLogger', (): void => {
+describe(TypeormLogger, (): void => {
   it('behaves as expected', async (): Promise<void> => {
     const logger = new Logger({ silence: true })
     const tLogger = new TypeormLogger(logger)

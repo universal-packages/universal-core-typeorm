@@ -33,7 +33,7 @@ jest.mock('typeorm/commands/SchemaSyncCommand')
 jest.mock('typeorm/commands/SubscriberCreateCommand')
 jest.mock('typeorm/commands/VersionCommand')
 
-describe('TypeormTask', (): void => {
+describe(TypeormTask, (): void => {
   it('behaves as expected', async (): Promise<void> => {
     const logger = new Logger({ silence: true })
     const typeormModule = new TypeormModule({ entitiesDir: 'a', migrationsDir: 'a', subscribersDir: 'a' } as any, logger)
