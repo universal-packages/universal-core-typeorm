@@ -30,14 +30,6 @@ typeormSubject.manager.find()
 core.coreModules.typeormModule.subject.manager.find()
 ```
 
-### Typescript
-
-In order for typescript to see the `typeormSubject` global you need to reference the types somewhere in your project, normally `./src/globals.ts`.
-
-```ts
-/// <reference types="@universal-packages/core-typeorm" />
-```
-
 ## Typeorm cli
 
 To execute any of the [Typeorm cli commands](https://orkhan.gitbook.io/typeorm/docs/using-cli) you can do it through the `typeorm-task`.
@@ -83,6 +75,12 @@ ucore exec typeorm-task db:drop
 ```
 
 ## Typescript
+
+In order for typescript to see the `typeormSubject` global you need to reference the types somewhere in your project, normally `./src/globals.ts`.
+
+```ts
+/// <reference types="@universal-packages/core-typeorm" />
+```
 
 This library is developed in TypeScript and shipped fully typed.
 
