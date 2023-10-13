@@ -75,8 +75,7 @@ ucore exec typeorm-task db:drop
 ```
 
 ## Typescript
-
-In order for typescript to see the `typeormSubject` global you need to reference the types somewhere in your project, normally `./src/globals.ts`.
+In order for typescript to see the global types you need to reference the types somewhere in your project, normally `./src/globals.d.ts`.
 
 ```ts
 /// <reference types="@universal-packages/core-typeorm" />
