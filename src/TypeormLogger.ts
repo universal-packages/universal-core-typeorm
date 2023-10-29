@@ -31,7 +31,7 @@ export class TypeormLogger implements TOL {
   logQuerySlow(time: number, query: string, parameters?: any[], _queryRunner?: QueryRunner): any {
     if (this.empty) return
     const measurement = new Measurement(BigInt(time) * 10000n)
-    this.logger.publish('WARNING', null, query, 'TYPEORM', { metadata: parameters, measurement: measurement.toString() })
+    this.logger.publish('WARNING', null, query, 'TYPEORM', { metadata: parameters, measurement })
   }
   /**
    * Logs events from the schema build process.

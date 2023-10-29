@@ -1,0 +1,29 @@
+default:
+  dataSource:
+    type: <type>
+    entities:
+      - ./src/entity/*.ts
+    migrations:
+      - ./src/migration/*.ts
+  entitiesDir: ./src/entity
+  migrationsDir: ./src/migration
+  subscribersDir: ./src/subscriber
+
+development:
+  dataSource:
+    synchronize: true
+    logging: true
+
+test:
+  dataSource:
+    synchronize: true
+    logging: false
+
+production:
+  dataSource:
+    entities:
+      - ./entity/*.js
+    migrations:
+      - ./migration/*.js
+    synchronize: false
+    logging: true

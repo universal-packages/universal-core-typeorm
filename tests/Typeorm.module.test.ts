@@ -1,20 +1,31 @@
-import { Logger } from '@universal-packages/logger'
-import { DataSource } from 'typeorm'
-
 import { TypeormModule } from '../src'
 
 jest.mock('typeorm')
 
+jestCore.runBare({
+  coreConfigOverride: {
+    config: { location: './tests/__fixtures__/config' },
+    modules: { location: './tests/__fixtures__' },
+    environments: { location: './tests/__fixtures__' },
+    logger: { silence: true }
+  }
+})
+
 describe(TypeormModule, (): void => {
   it('behaves as expected', async (): Promise<void> => {
-    const module = new TypeormModule({} as any, new Logger())
+    expect(global.typeormSubject).not.toBeUndefined()
 
-    await module.prepare()
-
-    expect(DataSource).toHaveBeenCalled()
-
-    await module.release()
-
-    expect(DataSource).toHaveBeenCalled()
+    expect(core.coreModules.typeormModule.config).toEqual({
+      dataSource: {
+        type: '<type>',
+        entities: ['./src/entity/*.ts'],
+        migrations: ['./src/migration/*.ts'],
+        synchronize: true,
+        logging: false
+      },
+      entitiesDir: './src/entity',
+      migrationsDir: './src/migration',
+      subscribersDir: './src/subscriber'
+    })
   })
 })
