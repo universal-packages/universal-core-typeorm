@@ -21,7 +21,7 @@
     "typeorm": "^0.3.17"
   },
   "peerDependencies": {
-    "@universal-packages/core": "^1.16.32"
+    "@universal-packages/core": "^1.16.34"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.2.0",
