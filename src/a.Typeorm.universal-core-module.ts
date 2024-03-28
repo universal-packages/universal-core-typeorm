@@ -1,8 +1,8 @@
 import { CoreModule } from '@universal-packages/core'
-import { TerminalTransport } from '@universal-packages/logger'
 import 'reflect-metadata'
 import { DataSource } from 'typeorm'
 
+import { LOG_CONFIGURATION } from './LOG_CONFIGURATION'
 import { TypeormModuleConfig } from './Typeorm.types'
 import { TypeormLogger } from './TypeormLogger'
 
@@ -13,9 +13,6 @@ export default class TypeormModule extends CoreModule<TypeormModuleConfig> {
   public subject: DataSource
 
   public async prepare(): Promise<void> {
-    const terminalTransport = this.logger.getTransport('terminal') as TerminalTransport
-    terminalTransport.options.categoryColors['TYPEORM'] = 'PURPLE'
-
     if (this.config) {
       this.subject = new DataSource({ ...this.config.dataSource, logger: new TypeormLogger(this.logger) })
 
@@ -25,7 +22,7 @@ export default class TypeormModule extends CoreModule<TypeormModuleConfig> {
         await this.subject.initialize()
       }
     } else {
-      this.logger.publish('WARNING', 'Typeorm configuration pending')
+      this.logger.log({ level: 'WARNING', title: 'Typeorm configuration pending', category: 'TYPEORM' }, LOG_CONFIGURATION)
     }
   }
 

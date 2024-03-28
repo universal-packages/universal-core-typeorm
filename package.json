@@ -17,11 +17,12 @@
     "typeorm": "typeorm-ts-node-commonjs"
   },
   "dependencies": {
+    "@universal-packages/logger-terminal-presenter": "^1.0.9",
     "reflect-metadata": "^0.1.13",
     "typeorm": "^0.3.17"
   },
   "peerDependencies": {
-    "@universal-packages/core": "^1.16.42"
+    "@universal-packages/core": "^1.17.3"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.2.0",

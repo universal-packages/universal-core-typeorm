@@ -2,6 +2,8 @@ import { Logger } from '@universal-packages/logger'
 import { Measurement } from '@universal-packages/time-measurer'
 import { QueryRunner, Logger as TOL } from 'typeorm'
 
+import { LOG_CONFIGURATION } from './LOG_CONFIGURATION'
+
 export class TypeormLogger implements TOL {
   private readonly logger: Logger
   private readonly empty: boolean
@@ -16,14 +18,14 @@ export class TypeormLogger implements TOL {
    */
   logQuery(query: string, parameters?: any[], _queryRunner?: QueryRunner): any {
     if (this.empty) return
-    this.logger.publish('QUERY', null, query, 'TYPEORM', { metadata: parameters })
+    this.logger.log({ level: 'QUERY', message: query, category: 'TYPEORM', metadata: parameters }, LOG_CONFIGURATION)
   }
   /**
    * Logs query that is failed.
    */
   logQueryError(error: Error, query: string, parameters?: any[], _queryRunner?: QueryRunner): any {
     if (this.empty) return
-    this.logger.publish('ERROR', null, query, 'TYPEORM', { error, metadata: parameters })
+    this.logger.log({ level: 'ERROR', message: query, category: 'TYPEORM', error, metadata: parameters }, LOG_CONFIGURATION)
   }
   /**
    * Logs query that is slow.
@@ -31,21 +33,21 @@ export class TypeormLogger implements TOL {
   logQuerySlow(time: number, query: string, parameters?: any[], _queryRunner?: QueryRunner): any {
     if (this.empty) return
     const measurement = new Measurement(BigInt(time) * 10000n)
-    this.logger.publish('WARNING', null, query, 'TYPEORM', { metadata: parameters, measurement })
+    this.logger.log({ level: 'WARNING', message: query, category: 'TYPEORM', metadata: parameters, measurement }, LOG_CONFIGURATION)
   }
   /**
    * Logs events from the schema build process.
    */
   logSchemaBuild(message: string, _queryRunner?: QueryRunner): any {
     if (this.empty) return
-    this.logger.publish('QUERY', null, message, 'TYPEORM')
+    this.logger.log({ level: 'QUERY', message, category: 'TYPEORM' }, LOG_CONFIGURATION)
   }
   /**
    * Logs events from the migrations run process.
    */
   logMigration(message: string, _queryRunner?: QueryRunner): any {
     if (this.empty) return
-    this.logger.publish('QUERY', null, message, 'TYPEORM')
+    this.logger.log({ level: 'QUERY', message, category: 'TYPEORM' }, LOG_CONFIGURATION)
   }
   /**
    * Perform logging using given logger, or by default to the console.
@@ -56,10 +58,10 @@ export class TypeormLogger implements TOL {
     switch (level) {
       case 'log':
       case 'info':
-        this.logger.publish('INFO', null, message, 'TYPEORM')
+        this.logger.log({ level: 'INFO', message, category: 'TYPEORM' }, LOG_CONFIGURATION)
         break
       case 'warn':
-        this.logger.publish('WARNING', null, message, 'TYPEORM')
+        this.logger.log({ level: 'WARNING', message, category: 'TYPEORM' }, LOG_CONFIGURATION)
     }
   }
 }

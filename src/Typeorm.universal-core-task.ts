@@ -19,6 +19,7 @@ import { SchemaSyncCommand } from 'typeorm/commands/SchemaSyncCommand'
 import { SubscriberCreateCommand } from 'typeorm/commands/SubscriberCreateCommand'
 import { VersionCommand } from 'typeorm/commands/VersionCommand'
 
+import { LOG_CONFIGURATION } from './LOG_CONFIGURATION'
 import { TypeormLogger } from './TypeormLogger'
 import TypeormModule from './a.Typeorm.universal-core-module'
 
@@ -33,7 +34,7 @@ export default class TypeormTask extends CoreTask {
     this.typeormModule = core.coreModules.typeormModule as TypeormModule
     this.dataSource = this.typeormModule.subject
     CommandUtils.loadDataSource = async (): Promise<DataSource> => this.dataSource
-    console.log = (...entries: string[]): void => this.logger.publish('INFO', null, entries.join(' '), 'TYPEORM')
+    console.log = (...entries: string[]): void => this.logger.log({ level: 'INFO', message: entries.join(' '), category: 'TYPEORM' }, LOG_CONFIGURATION)
     const actualExit = process.exit
     process.exit = ((code?: number): void => {
       if (code) actualExit(code)
@@ -42,7 +43,7 @@ export default class TypeormTask extends CoreTask {
     switch (this.directive) {
       case 'init':
         await populateTemplates(path.resolve(__dirname, 'template'), './src', { override: this.args.f })
-        this.logger.publish('INFO', 'Typeorm template initialized')
+        this.logger.log({ level: 'INFO', title: 'Typeorm template initialized', category: 'TYPEORM' }, LOG_CONFIGURATION)
         break
       case 'db:create':
         await this.createDB(this.typeormModule.config.dataSource.type, this.typeormModule.config.dataSource.database as string)
@@ -154,7 +155,7 @@ export default class TypeormTask extends CoreTask {
         throw new Error('Unrecognized database type')
     }
 
-    this.logger.publish('QUERY', 'Database created', name, 'TYPEORM', { metadata: { type, name } })
+    this.logger.log({ level: 'QUERY', title: 'Database created', message: name, category: 'TYPEORM', metadata: { type, name } }, LOG_CONFIGURATION)
   }
 
   private async dropDB(type: string, name: string): Promise<void> {
@@ -201,7 +202,7 @@ export default class TypeormTask extends CoreTask {
         throw new Error('Unrecognized database type')
     }
 
-    this.logger.publish('QUERY', 'Database dropped', name, 'TYPEORM', { metadata: { type, name } })
+    this.logger.log({ level: 'QUERY', title: 'Database dropped', message: name, category: 'TYPEORM', metadata: { type, name } }, LOG_CONFIGURATION)
   }
 
   private async createTestDB(): Promise<void> {
@@ -216,7 +217,7 @@ export default class TypeormTask extends CoreTask {
       try {
         await this.createDB(type, testDbName)
       } catch (error) {
-        this.logger.publish('WARNING', 'Create db error', error.message, 'TYPEORM')
+        this.logger.log({ level: 'WARNING', title: 'Create db error', message: error.message, category: 'TYPEORM' }, LOG_CONFIGURATION)
       }
     }
   }
@@ -233,7 +234,7 @@ export default class TypeormTask extends CoreTask {
       try {
         await this.dropDB(type, testDbName)
       } catch (error) {
-        this.logger.publish('WARNING', 'Drop db error', error.message, 'TYPEORM')
+        this.logger.log({ level: 'WARNING', title: 'Drop db error', message: error.message, category: 'TYPEORM' }, LOG_CONFIGURATION)
       }
     }
   }
@@ -249,7 +250,7 @@ export default class TypeormTask extends CoreTask {
 
       await new MigrationRunCommand().handler({ ...this.args, dataSource: '' } as any)
 
-      this.logger.publish('QUERY', 'Test database migrated', testDbName, 'TYPEORM')
+      this.logger.log({ level: 'QUERY', title: 'Test database migrated', measurement: testDbName, category: 'TYPEORM' }, LOG_CONFIGURATION)
     }
   }
 
