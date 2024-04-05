@@ -5,6 +5,6 @@ export default class TypeormEnvironment extends CoreEnvironment {
   public static readonly tideTo = 'typeorm-task'
 
   public beforeModulesLoad(): void {
-    global['TYPE_ORM_TASK'] = true
+    global['CORE_TYPE_ORM_TASK'] = true
   }
 }

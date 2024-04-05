@@ -1,0 +1,20 @@
+default:
+  dataSource:
+    type: postgres
+    entities:
+      - ./example/entity/*.ts
+    migrations:
+      - ./example/migration/*.ts
+  entitiesDir: ./example/entity
+  migrationsDir: ./example/migration
+  subscribersDir: ./example/subscriber
+
+development:
+  dataSource:
+    synchronize: true
+    logging: true
+
+test:
+  dataSource:
+    synchronize: true
+    logging: false

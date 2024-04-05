@@ -17,11 +17,11 @@ describe(TypeormModule, (): void => {
 
     expect(core.coreModules.typeormModule.config).toEqual({
       dataSource: {
-        type: '<type>',
+        type: 'postgres',
         entities: ['./src/entity/*.ts'],
         migrations: ['./src/migration/*.ts'],
         synchronize: true,
-        logging: false
+        logging: true
       },
       entitiesDir: './src/entity',
       migrationsDir: './src/migration',

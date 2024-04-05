@@ -18,7 +18,7 @@ export default class TypeormModule extends CoreModule<TypeormModuleConfig> {
 
       // We avoid to initialize the subject if we are in the task
       // so it doesn't complain about the missing db if we are creating it
-      if (!global['TYPE_ORM_TASK']) {
+      if (!global['CORE_TYPE_ORM_TASK']) {
         await this.subject.initialize()
       }
     } else {

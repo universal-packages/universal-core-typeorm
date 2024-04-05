@@ -1,6 +1,6 @@
 default:
   dataSource:
-    type: <type>
+    type: postgres
     entities:
       - ./src/entity/*.ts
     migrations:
@@ -17,13 +17,5 @@ development:
 test:
   dataSource:
     synchronize: true
-    logging: false
-
-production:
-  dataSource:
-    entities:
-      - ./entity/*.js
-    migrations:
-      - ./migration/*.js
-    synchronize: false
     logging: true
+
