@@ -2,6 +2,10 @@ default:
   dataSource:
     type: postgres
     database: postgres
+    username: david
+    password: secret
+    host: localhost
+    port: 5432
     entities:
       - ./src/entity/*.ts
     migrations:

@@ -6,32 +6,27 @@ import { LOG_CONFIGURATION } from './LOG_CONFIGURATION'
 
 export class TypeormLogger implements TOL {
   private readonly logger: Logger
-  private readonly empty: boolean
 
-  public constructor(logger: Logger, empty?: boolean) {
+  public constructor(logger: Logger) {
     this.logger = logger
-    this.empty = !!empty
   }
 
   /**
    * Logs query and parameters used in it.
    */
   logQuery(query: string, parameters?: any[], _queryRunner?: QueryRunner): any {
-    if (this.empty) return
     this.logger.log({ level: 'QUERY', message: query, category: 'TYPEORM', metadata: parameters }, LOG_CONFIGURATION)
   }
   /**
    * Logs query that is failed.
    */
   logQueryError(error: Error, query: string, parameters?: any[], _queryRunner?: QueryRunner): any {
-    if (this.empty) return
     this.logger.log({ level: 'ERROR', message: query, category: 'TYPEORM', error, metadata: parameters }, LOG_CONFIGURATION)
   }
   /**
    * Logs query that is slow.
    */
   logQuerySlow(time: number, query: string, parameters?: any[], _queryRunner?: QueryRunner): any {
-    if (this.empty) return
     const measurement = new Measurement(BigInt(time) * 10000n)
     this.logger.log({ level: 'WARNING', message: query, category: 'TYPEORM', metadata: parameters, measurement }, LOG_CONFIGURATION)
   }
@@ -39,14 +34,12 @@ export class TypeormLogger implements TOL {
    * Logs events from the schema build process.
    */
   logSchemaBuild(message: string, _queryRunner?: QueryRunner): any {
-    if (this.empty) return
     this.logger.log({ level: 'QUERY', message, category: 'TYPEORM' }, LOG_CONFIGURATION)
   }
   /**
    * Logs events from the migrations run process.
    */
   logMigration(message: string, _queryRunner?: QueryRunner): any {
-    if (this.empty) return
     this.logger.log({ level: 'QUERY', message, category: 'TYPEORM' }, LOG_CONFIGURATION)
   }
   /**
@@ -54,7 +47,6 @@ export class TypeormLogger implements TOL {
    * Log has its own level and message.
    */
   log(level: 'log' | 'info' | 'warn', message: any, _queryRunner?: QueryRunner): any {
-    if (this.empty) return
     switch (level) {
       case 'log':
       case 'info':

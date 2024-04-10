@@ -13,7 +13,7 @@ export default class TypeormModule extends CoreModule<TypeormModuleConfig> {
   public subject: DataSource
 
   public async prepare(): Promise<void> {
-    if (this.config) {
+    if (Object.keys(this.config).length) {
       this.subject = new DataSource({ ...this.config.dataSource, logger: new TypeormLogger(this.logger) })
 
       // We avoid to initialize the subject if we are in the task

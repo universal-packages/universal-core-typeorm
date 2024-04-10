@@ -1,6 +1,7 @@
 default:
   dataSource:
     type: postgres
+    database: universal-core-typeorm
     entities:
       - ./example/entity/*.ts
     migrations:

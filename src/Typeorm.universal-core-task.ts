@@ -1,6 +1,6 @@
 import { CoreTask } from '@universal-packages/core'
+import { SubProcess } from '@universal-packages/sub-process'
 import { populateTemplates } from '@universal-packages/template-populator'
-import { exec } from 'child_process'
 import os from 'os'
 import path from 'path'
 import { DataSource } from 'typeorm'
@@ -20,7 +20,6 @@ import { SubscriberCreateCommand } from 'typeorm/commands/SubscriberCreateComman
 import { VersionCommand } from 'typeorm/commands/VersionCommand'
 
 import { LOG_CONFIGURATION } from './LOG_CONFIGURATION'
-import { TypeormLogger } from './TypeormLogger'
 import TypeormModule from './a.Typeorm.universal-core-module'
 
 export default class TypeormTask extends CoreTask {
@@ -48,14 +47,14 @@ export default class TypeormTask extends CoreTask {
       case 'db:create':
         await this.createDB(this.typeormModule.config.dataSource.type, this.typeormModule.config.dataSource.database as string)
 
-        if (process.env['NODE_ENV'] === 'development') {
+        if (process.env['NODE_ENV'] === 'development' || process.env['SELF_TEST'] === 'true') {
           await this.createTestDB()
         }
         break
       case 'db:drop':
         await this.dropDB(this.typeormModule.config.dataSource.type, this.typeormModule.config.dataSource.database as string)
 
-        if (process.env['NODE_ENV'] === 'development') {
+        if (process.env['NODE_ENV'] === 'development' || process.env['SELF_TEST'] === 'true') {
           await this.dropTestDB()
         }
         break
@@ -81,7 +80,7 @@ export default class TypeormTask extends CoreTask {
       case 'migration:run':
         await new MigrationRunCommand().handler({ ...this.args, dataSource: '' } as any)
 
-        if (process.env['NODE_ENV'] === 'development') {
+        if (process.env['NODE_ENV'] === 'development' || process.env['SELF_TEST'] === 'true') {
           await this.migrateTestDB()
         }
         break
@@ -113,16 +112,16 @@ export default class TypeormTask extends CoreTask {
 
   private async createDB(type: string, name: string): Promise<void> {
     let options = ''
-    let environment = {}
+    let env = {}
 
     switch (type) {
       case 'postgres':
         if (this.typeormModule.config.dataSource['username']) options += ` -U ${this.typeormModule.config.dataSource['username']}`
-        if (this.typeormModule.config.dataSource['password']) environment['PGPASSWORD'] = this.typeormModule.config.dataSource['password']
+        if (this.typeormModule.config.dataSource['password']) env['PGPASSWORD'] = this.typeormModule.config.dataSource['password']
         if (this.typeormModule.config.dataSource['host']) options += ` -h ${this.typeormModule.config.dataSource['host']}`
         if (this.typeormModule.config.dataSource['port']) options += ` -p ${this.typeormModule.config.dataSource['port']}`
 
-        await this.execCommand(`createdb ${name} ${options}`, environment)
+        await new SubProcess({ command: `createdb ${name}${options}`, env }).run()
         break
       case 'mysql':
         if (this.typeormModule.config.dataSource['username']) options += ` -u ${this.typeormModule.config.dataSource['username']}`
@@ -130,7 +129,7 @@ export default class TypeormTask extends CoreTask {
         if (this.typeormModule.config.dataSource['host']) options += ` -h ${this.typeormModule.config.dataSource['host']}`
         if (this.typeormModule.config.dataSource['port']) options += ` -P ${this.typeormModule.config.dataSource['port']}`
 
-        await this.execCommand(`mysql -e "CREATE DATABASE IF NOT EXISTS ${name};" ${options}`)
+        await new SubProcess({ command: `mysql -e "CREATE DATABASE IF NOT EXISTS ${name};"${options}` }).run()
         break
       case 'mariadb':
         if (this.typeormModule.config.dataSource['username']) options += ` -u ${this.typeormModule.config.dataSource['username']}`
@@ -138,10 +137,10 @@ export default class TypeormTask extends CoreTask {
         if (this.typeormModule.config.dataSource['host']) options += ` -h ${this.typeormModule.config.dataSource['host']}`
         if (this.typeormModule.config.dataSource['port']) options += ` -P ${this.typeormModule.config.dataSource['port']}`
 
-        await this.execCommand(`mysql -e "CREATE DATABASE IF NOT EXISTS ${name};" ${options}`)
+        await new SubProcess({ command: `mysql -e "CREATE DATABASE IF NOT EXISTS ${name};"${options}` }).run()
         break
       case 'sqlite':
-        await this.execCommand(`touch ${name}`)
+        await new SubProcess({ command: `touch ${name}` }).run()
         break
       case 'mssql':
         if (this.typeormModule.config.dataSource['username']) options += ` -U ${this.typeormModule.config.dataSource['username']}`
@@ -149,7 +148,7 @@ export default class TypeormTask extends CoreTask {
         if (this.typeormModule.config.dataSource['host']) options += ` -S ${this.typeormModule.config.dataSource['host']}`
         if (this.typeormModule.config.dataSource['port']) options += ` -P ${this.typeormModule.config.dataSource['port']}`
 
-        await this.execCommand(`sqlcmd -Q "CREATE DATABASE ${name};" ${options}`)
+        await new SubProcess({ command: `sqlcmd -Q "CREATE DATABASE ${name};" ${options}` }).run()
         break
       default:
         throw new Error('Unrecognized database type')
@@ -160,16 +159,16 @@ export default class TypeormTask extends CoreTask {
 
   private async dropDB(type: string, name: string): Promise<void> {
     let options = ''
-    let environment = {}
+    let env = {}
 
     switch (type) {
       case 'postgres':
         if (this.typeormModule.config.dataSource['username']) options += ` -U ${this.typeormModule.config.dataSource['username']}`
-        if (this.typeormModule.config.dataSource['password']) environment['PGPASSWORD'] = this.typeormModule.config.dataSource['password']
+        if (this.typeormModule.config.dataSource['password']) env['PGPASSWORD'] = this.typeormModule.config.dataSource['password']
         if (this.typeormModule.config.dataSource['host']) options += ` -h ${this.typeormModule.config.dataSource['host']}`
         if (this.typeormModule.config.dataSource['port']) options += ` -p ${this.typeormModule.config.dataSource['port']}`
 
-        await this.execCommand(`dropdb ${name} ${options}`, environment)
+        await new SubProcess({ command: `dropdb ${name}${options}`, env }).run()
         break
       case 'mysql':
         if (this.typeormModule.config.dataSource['username']) options += ` -u ${this.typeormModule.config.dataSource['username']}`
@@ -177,7 +176,7 @@ export default class TypeormTask extends CoreTask {
         if (this.typeormModule.config.dataSource['host']) options += ` -h ${this.typeormModule.config.dataSource['host']}`
         if (this.typeormModule.config.dataSource['port']) options += ` -P ${this.typeormModule.config.dataSource['port']}`
 
-        await this.execCommand(`mysql -e "DROP DATABASE IF EXISTS ${name};" ${options}`)
+        await new SubProcess({ command: `mysql -e "DROP DATABASE IF EXISTS ${name};"${options}` }).run()
         break
       case 'mariadb':
         if (this.typeormModule.config.dataSource['username']) options += ` -u ${this.typeormModule.config.dataSource['username']}`
@@ -185,10 +184,10 @@ export default class TypeormTask extends CoreTask {
         if (this.typeormModule.config.dataSource['host']) options += ` -h ${this.typeormModule.config.dataSource['host']}`
         if (this.typeormModule.config.dataSource['port']) options += ` -P ${this.typeormModule.config.dataSource['port']}`
 
-        await this.execCommand(`mysql -e "DROP DATABASE IF EXISTS ${name};" ${options}`)
+        await new SubProcess({ command: `mysql -e "DROP DATABASE IF EXISTS ${name};"${options}` }).run()
         break
       case 'sqlite':
-        await this.execCommand(`rm ${name}`)
+        await new SubProcess({ command: `rm ${name}` }).run()
         break
       case 'mssql':
         if (this.typeormModule.config.dataSource['username']) options += ` -U ${this.typeormModule.config.dataSource['username']}`
@@ -196,7 +195,7 @@ export default class TypeormTask extends CoreTask {
         if (this.typeormModule.config.dataSource['host']) options += ` -S ${this.typeormModule.config.dataSource['host']}`
         if (this.typeormModule.config.dataSource['port']) options += ` -P ${this.typeormModule.config.dataSource['port']}`
 
-        await this.execCommand(`sqlcmd -Q "DROP DATABASE ${name};" ${options}`)
+        await new SubProcess({ command: `sqlcmd -Q "DROP DATABASE ${name};" ${options}` }).run()
         break
       default:
         throw new Error('Unrecognized database type')
@@ -210,12 +209,17 @@ export default class TypeormTask extends CoreTask {
     const type = typeormModule.config.dataSource.type
     const baseName = typeormModule.config.dataSource.database as string
     const cpuCount = os.cpus().length
+    const totalToCreate = cpuCount + 1
+
+    this.updateTaskProgress(100 / totalToCreate)
 
     for (let i = 1; i <= cpuCount; i++) {
-      const testDbName = this.getDBName(baseName, i)
+      const testDbName = this.getTestDBName(baseName, i)
 
       try {
         await this.createDB(type, testDbName)
+
+        this.updateTaskProgress(((i + 1) / totalToCreate) * 100)
       } catch (error) {
         this.logger.log({ level: 'WARNING', title: 'Create db error', message: error.message, category: 'TYPEORM' }, LOG_CONFIGURATION)
       }
@@ -227,12 +231,17 @@ export default class TypeormTask extends CoreTask {
     const type = typeormModule.config.dataSource.type
     const baseName = typeormModule.config.dataSource.database as string
     const cpuCount = os.cpus().length
+    const totalToDrop = cpuCount + 1
+
+    this.updateTaskProgress(100 / totalToDrop)
 
     for (let i = 1; i <= cpuCount; i++) {
-      const testDbName = this.getDBName(baseName, i)
+      const testDbName = this.getTestDBName(baseName, i)
 
       try {
         await this.dropDB(type, testDbName)
+
+        this.updateTaskProgress(((i + 1) / totalToDrop) * 100)
       } catch (error) {
         this.logger.log({ level: 'WARNING', title: 'Drop db error', message: error.message, category: 'TYPEORM' }, LOG_CONFIGURATION)
       }
@@ -245,8 +254,8 @@ export default class TypeormTask extends CoreTask {
     const cpuCount = os.cpus().length
 
     for (let i = 1; i <= cpuCount; i++) {
-      const testDbName = this.getDBName(baseName, i)
-      this.dataSource = new DataSource({ ...typeormModule.config.dataSource, database: testDbName as any, logger: new TypeormLogger(this.logger, true) })
+      const testDbName = this.getTestDBName(baseName, i)
+      this.dataSource = new DataSource({ ...typeormModule.config.dataSource, database: testDbName as any, logger: null })
 
       await new MigrationRunCommand().handler({ ...this.args, dataSource: '' } as any)
 
@@ -254,16 +263,7 @@ export default class TypeormTask extends CoreTask {
     }
   }
 
-  private execCommand(command: string, env: Record<string, any> = {}): Promise<void> {
-    return new Promise((resolve, reject): void => {
-      exec(command, { env: { ...process.env, ...env } }, (error: Error): void => {
-        if (error) reject(error)
-        resolve()
-      })
-    })
-  }
-
-  private getDBName(baseName: string, cpuIndex: number): string {
+  private getTestDBName(baseName: string, cpuIndex: number): string {
     const baseTestDBName = baseName.includes('development') ? baseName.replace(/development/, 'test') : `${baseName}-test`
     return `${baseTestDBName}-${cpuIndex}`
   }

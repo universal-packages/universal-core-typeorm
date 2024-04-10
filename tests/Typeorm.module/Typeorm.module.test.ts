@@ -1,4 +1,4 @@
-import { TypeormModule } from '../src'
+import { TypeormModule } from '../../src'
 
 jest.mock('typeorm')
 
@@ -18,6 +18,7 @@ describe(TypeormModule, (): void => {
     expect(core.coreModules.typeormModule.config).toEqual({
       dataSource: {
         type: 'postgres',
+        database: 'postgres',
         entities: ['./src/entity/*.ts'],
         migrations: ['./src/migration/*.ts'],
         synchronize: true,

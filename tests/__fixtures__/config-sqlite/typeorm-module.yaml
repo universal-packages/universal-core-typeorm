@@ -1,7 +1,7 @@
 default:
   dataSource:
-    type: postgres
-    database: postgres
+    type: sqlite
+    database: database
     entities:
       - ./src/entity/*.ts
     migrations:

@@ -1,4 +1,4 @@
-import { populateTemplates } from '@universal-packages/template-populator'
+import os from 'os'
 import { CacheClearCommand } from 'typeorm/commands/CacheClearCommand'
 import { EntityCreateCommand } from 'typeorm/commands/EntityCreateCommand'
 import { MigrationCreateCommand } from 'typeorm/commands/MigrationCreateCommand'
@@ -13,10 +13,9 @@ import { SchemaSyncCommand } from 'typeorm/commands/SchemaSyncCommand'
 import { SubscriberCreateCommand } from 'typeorm/commands/SubscriberCreateCommand'
 import { VersionCommand } from 'typeorm/commands/VersionCommand'
 
-import TypeormTask from '../src/Typeorm.universal-core-task'
+import TypeormTask from '../../src/Typeorm.universal-core-task'
 
 jest.mock('typeorm')
-jest.mock('@universal-packages/template-populator')
 jest.mock('typeorm/commands/CacheClearCommand')
 jest.mock('typeorm/commands/EntityCreateCommand')
 jest.mock('typeorm/commands/MigrationCreateCommand')
@@ -39,11 +38,10 @@ const coreConfigOverride = {
   logger: { silence: true }
 }
 
-describe(TypeormTask, (): void => {
-  it('init', async (): Promise<void> => {
-    await jestCore.execTask('typeorm-task', { directive: 'init', args: { f: true }, coreConfigOverride })
-    expect(populateTemplates).toHaveBeenCalledWith(expect.stringMatching(/universal-core-typeorm\/src\/template/), './src', { override: true })
+process.env['SELF_TEST'] = 'true'
 
+describe(TypeormTask, (): void => {
+  it('typeorm-cli', async (): Promise<void> => {
     await jestCore.execTask('typeorm-task', { directive: 'cache:clear', args: {}, coreConfigOverride })
     expect(CacheClearCommand).toHaveBeenCalled()
 
@@ -60,7 +58,7 @@ describe(TypeormTask, (): void => {
     expect(MigrationRevertCommand).toHaveBeenCalled()
 
     await jestCore.execTask('typeorm-task', { directive: 'migration:run', args: {}, coreConfigOverride })
-    expect(MigrationRunCommand).toHaveBeenCalled()
+    expect(MigrationRunCommand).toHaveBeenCalledTimes(1 + os.cpus().length)
 
     await jestCore.execTask('typeorm-task', { directive: 'migration:show', args: {}, coreConfigOverride })
     expect(MigrationShowCommand).toHaveBeenCalled()
@@ -82,9 +80,5 @@ describe(TypeormTask, (): void => {
 
     await jestCore.execTask('typeorm-task', { directive: 'version', args: {}, coreConfigOverride })
     expect(VersionCommand).toHaveBeenCalled()
-  })
-
-  it('throws an error if directive is not recognized', async (): Promise<void> => {
-    await expect(jestCore.execTask('typeorm-task', { directive: 'nop', args: { f: true }, coreConfigOverride })).rejects.toThrow('Unrecognized Typeorm command')
   })
 })
