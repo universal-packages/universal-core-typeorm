@@ -42,43 +42,43 @@ process.env['SELF_TEST'] = 'true'
 
 describe(TypeormTask, (): void => {
   it('typeorm-cli', async (): Promise<void> => {
-    await jestCore.execTask('typeorm-task', { directive: 'cache:clear', args: {}, coreConfigOverride })
+    await coreJest.execTask('typeorm', { directive: 'cache:clear', args: {}, coreConfigOverride })
     expect(CacheClearCommand).toHaveBeenCalled()
 
-    await jestCore.execTask('typeorm-task', { directive: 'entity:create', args: { name: 'b' }, coreConfigOverride })
+    await coreJest.execTask('typeorm', { directive: 'entity:create', args: { name: 'b' }, coreConfigOverride })
     expect(EntityCreateCommand).toHaveBeenCalled()
 
-    await jestCore.execTask('typeorm-task', { directive: 'migration:create', args: { name: 'b' }, coreConfigOverride })
+    await coreJest.execTask('typeorm', { directive: 'migration:create', args: { name: 'b' }, coreConfigOverride })
     expect(MigrationCreateCommand).toHaveBeenCalled()
 
-    await jestCore.execTask('typeorm-task', { directive: 'migration:generate', args: { name: 'b' }, coreConfigOverride })
+    await coreJest.execTask('typeorm', { directive: 'migration:generate', args: { name: 'b' }, coreConfigOverride })
     expect(MigrationGenerateCommand).toHaveBeenCalled()
 
-    await jestCore.execTask('typeorm-task', { directive: 'migration:revert', args: {}, coreConfigOverride })
+    await coreJest.execTask('typeorm', { directive: 'migration:revert', args: {}, coreConfigOverride })
     expect(MigrationRevertCommand).toHaveBeenCalled()
 
-    await jestCore.execTask('typeorm-task', { directive: 'migration:run', args: {}, coreConfigOverride })
+    await coreJest.execTask('typeorm', { directive: 'migration:run', args: {}, coreConfigOverride })
     expect(MigrationRunCommand).toHaveBeenCalledTimes(1 + os.cpus().length)
 
-    await jestCore.execTask('typeorm-task', { directive: 'migration:show', args: {}, coreConfigOverride })
+    await coreJest.execTask('typeorm', { directive: 'migration:show', args: {}, coreConfigOverride })
     expect(MigrationShowCommand).toHaveBeenCalled()
 
-    await jestCore.execTask('typeorm-task', { directive: 'query', args: {}, coreConfigOverride })
+    await coreJest.execTask('typeorm', { directive: 'query', args: {}, coreConfigOverride })
     expect(QueryCommand).toHaveBeenCalled()
 
-    await jestCore.execTask('typeorm-task', { directive: 'schema:drop', args: {}, coreConfigOverride })
+    await coreJest.execTask('typeorm', { directive: 'schema:drop', args: {}, coreConfigOverride })
     expect(SchemaDropCommand).toHaveBeenCalled()
 
-    await jestCore.execTask('typeorm-task', { directive: 'schema:log', args: {}, coreConfigOverride })
+    await coreJest.execTask('typeorm', { directive: 'schema:log', args: {}, coreConfigOverride })
     expect(SchemaLogCommand).toHaveBeenCalled()
 
-    await jestCore.execTask('typeorm-task', { directive: 'schema:sync', args: {}, coreConfigOverride })
+    await coreJest.execTask('typeorm', { directive: 'schema:sync', args: {}, coreConfigOverride })
     expect(SchemaSyncCommand).toHaveBeenCalled()
 
-    await jestCore.execTask('typeorm-task', { directive: 'subscriber:create', args: { name: 'b' }, coreConfigOverride })
+    await coreJest.execTask('typeorm', { directive: 'subscriber:create', args: { name: 'b' }, coreConfigOverride })
     expect(SubscriberCreateCommand).toHaveBeenCalled()
 
-    await jestCore.execTask('typeorm-task', { directive: 'version', args: {}, coreConfigOverride })
+    await coreJest.execTask('typeorm', { directive: 'version', args: {}, coreConfigOverride })
     expect(VersionCommand).toHaveBeenCalled()
   })
 })

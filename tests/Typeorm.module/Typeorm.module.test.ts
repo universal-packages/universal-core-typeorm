@@ -2,7 +2,7 @@ import { TypeormModule } from '../../src'
 
 jest.mock('typeorm')
 
-jestCore.runBare({
+coreJest.runBare({
   coreConfigOverride: {
     config: { location: './tests/__fixtures__/config' },
     modules: { location: './tests/__fixtures__' },
@@ -15,7 +15,7 @@ describe(TypeormModule, (): void => {
   it('behaves as expected', async (): Promise<void> => {
     expect(global.typeormSubject).not.toBeUndefined()
 
-    expect(core.coreModules.typeormModule.config).toEqual({
+    expect(core.coreModules.typeorm.config).toEqual({
       dataSource: {
         type: 'postgres',
         database: 'postgres',

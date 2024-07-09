@@ -7,7 +7,7 @@ import { TypeormModuleConfig } from './Typeorm.types'
 import { TypeormLogger } from './TypeormLogger'
 
 export default class TypeormModule extends CoreModule<TypeormModuleConfig> {
-  public static readonly moduleName = 'typeorm-module'
+  public static readonly moduleName = 'typeorm'
   public static readonly description = 'Typeorm core module wrappers'
 
   public subject: DataSource

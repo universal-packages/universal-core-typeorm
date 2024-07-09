@@ -1,6 +1,5 @@
 import { CoreTask } from '@universal-packages/core'
 import { SubProcess } from '@universal-packages/sub-process'
-import { populateTemplates } from '@universal-packages/template-populator'
 import os from 'os'
 import path from 'path'
 import { DataSource } from 'typeorm'
@@ -23,14 +22,14 @@ import { LOG_CONFIGURATION } from './LOG_CONFIGURATION'
 import TypeormModule from './a.Typeorm.universal-core-module'
 
 export default class TypeormTask extends CoreTask {
-  public static readonly taskName = 'typeorm-task'
+  public static readonly taskName = 'typeorm'
   public static readonly description = 'Typeorm cli commands analogic task'
 
   private dataSource: DataSource
   private typeormModule: TypeormModule
 
   public async exec(): Promise<void> {
-    this.typeormModule = core.coreModules.typeormModule as TypeormModule
+    this.typeormModule = core.coreModules.typeorm as TypeormModule
     this.dataSource = this.typeormModule.subject
     CommandUtils.loadDataSource = async (): Promise<DataSource> => this.dataSource
     console.log = (...entries: string[]): void => this.logger.log({ level: 'INFO', message: entries.join(' '), category: 'TYPEORM' }, LOG_CONFIGURATION)
@@ -40,10 +39,6 @@ export default class TypeormTask extends CoreTask {
     }) as any
 
     switch (this.directive) {
-      case 'init':
-        await populateTemplates(path.resolve(__dirname, 'template'), './src', { override: this.args.f })
-        this.logger.log({ level: 'INFO', title: 'Typeorm template initialized', category: 'TYPEORM' }, LOG_CONFIGURATION)
-        break
       case 'db:create':
         await this.createDB(this.typeormModule.config.dataSource.type, this.typeormModule.config.dataSource.database as string)
 
@@ -205,13 +200,13 @@ export default class TypeormTask extends CoreTask {
   }
 
   private async createTestDB(): Promise<void> {
-    const typeormModule = core.coreModules.typeormModule as TypeormModule
+    const typeormModule = core.coreModules.typeorm as TypeormModule
     const type = typeormModule.config.dataSource.type
     const baseName = typeormModule.config.dataSource.database as string
     const cpuCount = os.cpus().length
     const totalToCreate = cpuCount + 1
 
-    this.updateTaskProgress(100 / totalToCreate)
+    this.updateProgress(100 / totalToCreate)
 
     for (let i = 1; i <= cpuCount; i++) {
       const testDbName = this.getTestDBName(baseName, i)
@@ -219,7 +214,7 @@ export default class TypeormTask extends CoreTask {
       try {
         await this.createDB(type, testDbName)
 
-        this.updateTaskProgress(((i + 1) / totalToCreate) * 100)
+        this.updateProgress(((i + 1) / totalToCreate) * 100)
       } catch (error) {
         this.logger.log({ level: 'WARNING', title: 'Create db error', message: error.message, category: 'TYPEORM' }, LOG_CONFIGURATION)
       }
@@ -227,13 +222,13 @@ export default class TypeormTask extends CoreTask {
   }
 
   private async dropTestDB(): Promise<void> {
-    const typeormModule = core.coreModules.typeormModule as TypeormModule
+    const typeormModule = core.coreModules.typeorm as TypeormModule
     const type = typeormModule.config.dataSource.type
     const baseName = typeormModule.config.dataSource.database as string
     const cpuCount = os.cpus().length
     const totalToDrop = cpuCount + 1
 
-    this.updateTaskProgress(100 / totalToDrop)
+    this.updateProgress(100 / totalToDrop)
 
     for (let i = 1; i <= cpuCount; i++) {
       const testDbName = this.getTestDBName(baseName, i)
@@ -241,7 +236,7 @@ export default class TypeormTask extends CoreTask {
       try {
         await this.dropDB(type, testDbName)
 
-        this.updateTaskProgress(((i + 1) / totalToDrop) * 100)
+        this.updateProgress(((i + 1) / totalToDrop) * 100)
       } catch (error) {
         this.logger.log({ level: 'WARNING', title: 'Drop db error', message: error.message, category: 'TYPEORM' }, LOG_CONFIGURATION)
       }
@@ -249,7 +244,7 @@ export default class TypeormTask extends CoreTask {
   }
 
   private async migrateTestDB(): Promise<void> {
-    const typeormModule = core.coreModules.typeormModule as TypeormModule
+    const typeormModule = core.coreModules.typeorm as TypeormModule
     const baseName = typeormModule.config.dataSource.database as string
     const cpuCount = os.cpus().length
 

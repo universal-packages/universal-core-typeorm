@@ -17,7 +17,7 @@ process.env['SELF_TEST'] = 'true'
 
 describe(TypeormTask, (): void => {
   it('db:create', async (): Promise<void> => {
-    await jestCore.execTask('typeorm-task', { directive: 'db:create', coreConfigOverride })
+    await coreJest.execTask('typeorm', { directive: 'db:create', coreConfigOverride })
 
     expect(SubProcess).toHaveRun('touch database')
 
@@ -29,7 +29,7 @@ describe(TypeormTask, (): void => {
   })
 
   it('db:drop', async (): Promise<void> => {
-    await jestCore.execTask('typeorm-task', { directive: 'db:drop', coreConfigOverride })
+    await coreJest.execTask('typeorm', { directive: 'db:drop', coreConfigOverride })
 
     expect(SubProcess).toHaveRun('rm database')
 

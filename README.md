@@ -15,7 +15,7 @@ npm install @universal-packages/core-typeorm
 ## Initialization
 
 ```shell
-ucore exec typeorm-task init
+ucore initialize typeorm
 ```
 
 ## Global
@@ -32,7 +32,7 @@ core.coreModules.typeormModule.subject.manager.find()
 
 ## Typeorm cli
 
-To execute any of the [Typeorm cli commands](https://orkhan.gitbook.io/typeorm/docs/using-cli) you can do it through the `typeorm-task`.
+To execute any of the [Typeorm cli commands](https://orkhan.gitbook.io/typeorm/docs/using-cli) you can do it through the `typeorm`.
 
 Instead of
 
@@ -43,27 +43,19 @@ npm run typeorm <command> <options>
 Do
 
 ```shell
-ucore exec typeorm-task <command> <options>
+ucore exec typeorm <command> <options>
 ```
 
 All commands will behave the same, except that the data source always will be set from the TypeormModule that gets the configuration through universal-core config system.
 
 ## Additional cli
 
-### Init
-
-The `init` will only populate your current project with the typeorm template.
-
-```shell
-ucore exec typeorm-task init
-```
-
 ### Crate DB
 
 Creates the configured db using the right adapter. In non production environments it creates the analogous test dbs named `your-development-db-name-<test>-<cpu-#>`
 
 ```shell
-ucore exec typeorm-task db:create
+ucore exec typeorm db:create
 ```
 
 ### Drop DB
@@ -71,7 +63,7 @@ ucore exec typeorm-task db:create
 Drops the configured db using the right adapter. In non production environments it drops the analogous test dbs named `your-development-db-name-<test>-<cpu-#>`
 
 ```shell
-ucore exec typeorm-task db:drop
+ucore exec typeorm db:drop
 ```
 
 ## Typescript

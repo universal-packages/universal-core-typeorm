@@ -4,7 +4,7 @@ import { TypeormModule } from '../../src'
 
 jest.mock('typeorm')
 
-jestCore.runBare({
+coreJest.runBare({
   coreConfigOverride: {
     config: { location: './tests/__fixtures__/not-config' },
     modules: { location: './tests/__fixtures__' },
@@ -15,7 +15,7 @@ jestCore.runBare({
 describe(TypeormModule, (): void => {
   it('behaves as expected', async (): Promise<void> => {
     expect(global.typeormSubject).toBeUndefined()
-    expect(core.coreModules.typeormModule.config).toEqual({})
+    expect(core.coreModules.typeorm.config).toEqual({})
 
     expect(Logger).toHaveLogged({ level: 'WARNING', title: 'Typeorm configuration pending' })
   })
