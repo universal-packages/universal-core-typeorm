@@ -17,7 +17,7 @@
     "typeorm": "typeorm-ts-node-commonjs"
   },
   "dependencies": {
-    "@universal-packages/sub-process": "^1.15.5",
+    "@universal-packages/sub-process": "^1.15.6",
     "reflect-metadata": "^0.1.13",
     "typeorm": "^0.3.17"
   },
