@@ -206,7 +206,7 @@ export default class TypeormTask extends CoreTask {
     const cpuCount = os.cpus().length
     const totalToCreate = cpuCount + 1
 
-    this.updateProgress(100 / totalToCreate)
+    core.developer.terminalPresenter.setProgressPercentage(100 / totalToCreate)
 
     for (let i = 1; i <= cpuCount; i++) {
       const testDbName = this.getTestDBName(baseName, i)
@@ -214,7 +214,7 @@ export default class TypeormTask extends CoreTask {
       try {
         await this.createDB(type, testDbName)
 
-        this.updateProgress(((i + 1) / totalToCreate) * 100)
+        core.developer.terminalPresenter.setProgressPercentage(((i + 1) / totalToCreate) * 100)
       } catch (error) {
         this.logger.log({ level: 'WARNING', title: 'Create db error', message: error.message, category: 'TYPEORM' }, LOG_CONFIGURATION)
       }
@@ -228,7 +228,7 @@ export default class TypeormTask extends CoreTask {
     const cpuCount = os.cpus().length
     const totalToDrop = cpuCount + 1
 
-    this.updateProgress(100 / totalToDrop)
+    core.developer.terminalPresenter.setProgressPercentage(100 / totalToDrop)
 
     for (let i = 1; i <= cpuCount; i++) {
       const testDbName = this.getTestDBName(baseName, i)
@@ -236,7 +236,7 @@ export default class TypeormTask extends CoreTask {
       try {
         await this.dropDB(type, testDbName)
 
-        this.updateProgress(((i + 1) / totalToDrop) * 100)
+        core.developer.terminalPresenter.setProgressPercentage(((i + 1) / totalToDrop) * 100)
       } catch (error) {
         this.logger.log({ level: 'WARNING', title: 'Drop db error', message: error.message, category: 'TYPEORM' }, LOG_CONFIGURATION)
       }
