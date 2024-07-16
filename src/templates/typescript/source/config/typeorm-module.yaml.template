@@ -1,26 +1,29 @@
 default:
   dataSource:
-    type: <type>
+    type: {{type}}
     entities:
-      - ./src/entity/*.ts
+      - {{sourceLocation}}/entity/*.ts
     migrations:
-      - ./src/migration/*.ts
-  entitiesDir: ./src/entity
-  migrationsDir: ./src/migration
-  subscribersDir: ./src/subscriber
+      - {{sourceLocation}}/migration/*.ts
+  entitiesDir: {{sourceLocation}}/entity
+  migrationsDir: {{sourceLocation}}/migration
+  subscribersDir: {{sourceLocation}}/subscriber
 
 development:
   dataSource:
+    database: {{appName}}-development
     synchronize: true
     logging: true
 
 test:
   dataSource:
+    database: {{appName}}-test-{{jestWorkerId}}
     synchronize: true
     logging: false
 
 production:
   dataSource:
+    database: {{appName}}-production
     entities:
       - ./entity/*.js
     migrations:

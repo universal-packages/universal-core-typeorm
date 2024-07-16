@@ -14,8 +14,10 @@ npm install @universal-packages/core-typeorm
 
 ## Initialization
 
+If no `--type` is provided it will default to `postgres`.
+
 ```shell
-ucore initialize typeorm
+ucore initialize typeorm --typescript --type mysql
 ```
 
 ## Global
