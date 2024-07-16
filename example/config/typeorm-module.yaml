@@ -12,10 +12,12 @@ default:
 
 development:
   dataSource:
+    database: universal-core-typeorm-development
     synchronize: true
     logging: true
 
 test:
   dataSource:
+    database: universal-core-typeorm-test
     synchronize: true
     logging: false

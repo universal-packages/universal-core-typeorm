@@ -17,7 +17,7 @@ development:
 
 test:
   dataSource:
-    database: {{appName}}-test-{{jestWorkerId}}
+    database: {{appName}}-test-{{ JEST_WORKER_ID }}
     synchronize: true
     logging: false
 
