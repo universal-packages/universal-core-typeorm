@@ -254,7 +254,7 @@ export default class TypeormTask extends CoreTask {
 
       await new MigrationRunCommand().handler({ ...this.args, dataSource: '' } as any)
 
-      this.logger.log({ level: 'QUERY', title: 'Test database migrated', measurement: testDbName, category: 'TYPEORM' }, LOG_CONFIGURATION)
+      this.logger.log({ level: 'QUERY', title: 'Test database migrated', message: testDbName, category: 'TYPEORM' }, LOG_CONFIGURATION)
     }
   }
 
