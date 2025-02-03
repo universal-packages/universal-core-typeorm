@@ -22,13 +22,13 @@
     "typeorm": "^0.3.17"
   },
   "peerDependencies": {
-    "@universal-packages/core": "^1.32.0"
+    "@universal-packages/core": "^1.32.1"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/jest": "^29.5.14",
     "@types/node": "^18.11.9",
-    "@universal-packages/core-jest": "^1.5.7",
+    "@universal-packages/core-jest": "^1.5.8",
     "@universal-packages/logger-jest": "^1.1.2",
     "@universal-packages/maintenance": "^1.7.4",
     "@universal-packages/sub-process-jest": "^1.2.2",
